@@ -54,4 +54,4 @@ jobs:
 
       - name: Commit tests
         run: |
-          git diff --cached --name-only && git commit -m "Build tests" && git push
+          git diff --cached --name-only && git commit -m "Build tests" && git push || :;
