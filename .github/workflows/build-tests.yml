@@ -54,10 +54,4 @@ jobs:
 
       - name: Commit tests
         run: |
-          git diff-index --quiet HEAD -- || git commit -m "Build tests"
-
-      - name: Push to GitHub
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+          git diff --cached --name-only && git commit -m "Build tests" && git push
