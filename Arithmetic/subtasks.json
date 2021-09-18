@@ -12,7 +12,7 @@
         "a0": {
             "index": 1,
             "score": 20,
-            "text": "$A = 0$、$1 \\leq B \\leq 10^{4}",
+            "text": "$A = 0$、$1 \\leq B \\leq 10^{4}$",
             "validators": [
                 "validator-2.cpp"
             ]
