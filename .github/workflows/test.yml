@@ -1,0 +1,16 @@
+name: Test
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check env
+        run: |
+          echo GITHUB_SHA: ${{ GITHUB_SHA }}

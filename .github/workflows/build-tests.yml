@@ -1,13 +1,13 @@
 name: Build tests
 
 on:
-  push:
-    paths:
-      - '*/gen/**'
-      - '*/solution/**'
-      - '*/problem.json'
-      - '*/solutions.json'
-      - '*/subtasks.json'
+  # push:
+  #   paths:
+  #     - '*/gen/**'
+  #     - '*/solution/**'
+  #     - '*/problem.json'
+  #     - '*/solutions.json'
+  #     - '*/subtasks.json'
   workflow_dispatch:
 
 jobs:
