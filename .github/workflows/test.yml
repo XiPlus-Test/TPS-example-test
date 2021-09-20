@@ -77,7 +77,7 @@ jobs:
 
   build-pdf:
     name: build-pdf-${{ matrix.problem }}
-    needs: check-${{ matrix.problem }}
+    needs: check
     runs-on: ubuntu-18.04
     strategy:
       matrix:
