@@ -73,7 +73,7 @@ jobs:
         id: env
         run: |
           echo "Checking pdf"
-          echo "::set-output name=pdf::"${{ matrix.problem }}
+          echo "::set-output name=pdf-${{ matrix.problem }}::"${{ matrix.problem }}
 
   build-pdf:
     name: build-pdf-${{ matrix.problem }}
@@ -94,8 +94,6 @@ jobs:
           NEEDS: ${{ toJson(needs) }}
         run: |
           echo "$NEEDS"
-          echo ${{ format('needs.check-{0}.outputs.build-pdf', matrix.problem) }}
-          echo ${{ matrix.problem }}
 
       - name: Build pdf
         if: ${{ format('needs.check-{0}.outputs.build-pdf', matrix.problem) }} != ${{ matrix.problem }}
