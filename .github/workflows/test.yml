@@ -73,12 +73,12 @@ jobs:
 
       - name: Make flags dir
         run: |
-          mkdir -p ~/flags/
+          mkdir -p ~/flags/build-pdf/
 
       - name: Set problem flag
         if: steps.changes.outputs.pdf == 'true' || (${{ matrix.problem }} == 'pA' && steps.changes.outputs.cover == 'true')
         run: |
-          echo true > ~/flags/build-pdf-${{ matrix.problem }}
+          echo true > ~/flags/build-pdf/${{ matrix.problem }}
 
       - name: Upload flags
         uses: actions/upload-artifact@v2
@@ -101,7 +101,7 @@ jobs:
 
       - name: build-pdf
         run: |
-          probs=$(ls -m ~/flags/build-pdf-* 2> /dev/null)
+          probs=$(cd ~/flags/ && ls -m 2> /dev/null)
           echo $probs
           echo '::set-output name=build-pdf::[$probs]'
 
