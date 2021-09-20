@@ -101,7 +101,7 @@ jobs:
 
       - name: build-pdf
         run: |
-          probs=$(cd ~/flags/ && ls -m 2> /dev/null)
+          probs=$(cd ~/flags/build-pdf/ && ls -m 2> /dev/null)
           echo $probs
           echo '::set-output name=build-pdf::[$probs]'
 
