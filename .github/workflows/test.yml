@@ -14,6 +14,10 @@ jobs:
       - name: Check Github env
         run: |
           echo GITHUB_SHA: $GITHUB_SHA
+          echo github.event: ${{ github.event }}
+          echo github.base_ref: ${{ github.base_ref }}
+          echo github.head_ref: ${{ github.head_ref }}
+          echo github.sha: ${{ github.sha }}
 
       - name: Check env
         run: |
