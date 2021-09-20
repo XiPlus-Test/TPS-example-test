@@ -91,6 +91,7 @@ jobs:
       #     cd tps && sudo ./install-tps.sh
       - name: env
         run: |
+          echo ${{ toJson(needs) }}
           echo ${{ format('needs.check-{0}.outputs.build-pdf', matrix.problem) }}
           echo ${{ matrix.problem }}
 
