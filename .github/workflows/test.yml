@@ -1,4 +1,6 @@
 name: Test
+env:
+  PROBLEM_MATRIX: ['pA', 'pB', 'pC']
 
 on:
   push:
@@ -46,7 +48,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        problem: [pA, pB, pC]
+        problem: ${{ fromJson($PROBLEM_MATRIX) }}
     outputs:
       build-pdf: ${{ steps.env.outputs.pdf }}
 
@@ -81,7 +83,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        problem: [pA, pB, pC]
+        problem: ${{ fromJson($PROBLEM_MATRIX) }}
     steps:
       - uses: actions/checkout@v2
 
@@ -107,7 +109,7 @@ jobs:
 
     strategy:
       matrix:
-        problem: [pA, pB, pC]
+        problem: ${{ fromJson($PROBLEM_MATRIX) }}
 
     steps:
       - uses: actions/checkout@v2
