@@ -19,14 +19,17 @@ jobs:
           echo github.event_name: ${{ github.event_name }}
           echo github.ref: ${{ github.ref }}
           echo github.sha: ${{ github.sha }}
+          echo github.event.base_ref: ${{ github.event.base_ref }}
+          echo github.event.before: ${{ github.event.before }}
+
+     - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
 
       - name: git log
         run: |
           git log -n 5
-
-      - name: Check env
-        run: |
-          env
 
       - uses: dorny/paths-filter@v2
         id: changes
