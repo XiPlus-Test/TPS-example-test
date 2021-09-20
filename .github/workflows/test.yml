@@ -13,4 +13,4 @@ jobs:
 
       - name: Check env
         run: |
-          echo GITHUB_SHA: ${{ GITHUB_SHA }}
+          echo GITHUB_SHA: $GITHUB_SHA
