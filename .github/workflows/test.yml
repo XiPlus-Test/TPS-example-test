@@ -46,8 +46,6 @@ jobs:
     strategy:
       matrix:
         problem: [pA, pB, pC]
-    outputs:
-      build-pdf: ${{ steps.env.outputs.pdf }}
 
     steps:
       - uses: actions/checkout@v2
@@ -67,24 +65,48 @@ jobs:
             cover:
               - cover.tex
 
-      # - name: Make flags dir
-      #   run: |
-      #     mkdir -p
+      - name: Make flags dir
+        run: |
+          mkdir -p ~/flags/
 
       - name: Set problem flag
         if: steps.changes.outputs.pdf == 'true' || ${{ matrix.problem }} == 'pA' && steps.changes.outputs.cover == 'true'
         id: env
         run: |
-          echo "Checking pdf"
-          echo "::set-output name=pdf::"${{ matrix.problem }}
+          echo true > ~/flags/build-pdf-${{ matrix.problem }}
+
+      - name: Upload flags
+        uses: actions/upload-artifact@v2
+        with:
+          name: flags
+          path: ~/flags/
+
+  check-post:
+    needs: check
+    runs-on: ubuntu-18.04
+    outputs:
+      build-pdf: ${{ steps.env.outputs.build-pdf }}
+
+    steps:
+      - name: Download flags
+        uses: actions/download-artifact@v2
+        with:
+          name: flags
+
+      - name: build-pdf
+        run: |
+          probs=$(ls -m ~/flags/build-pdf-*)
+          echo $probs
+          echo '::set-output name=build-pdf::[$probs]'
 
   build-pdf:
     name: build-pdf-${{ matrix.problem }}
-    needs: check
+    needs: check-post
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        problem: [pA, pB, pC]
+        problem: ${{ needs.check-post.outputs.build-pdf }}
+
     steps:
       - uses: actions/checkout@v2
 
