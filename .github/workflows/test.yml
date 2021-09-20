@@ -18,6 +18,10 @@ jobs:
           echo github.ref: ${{ github.ref }}
           echo github.sha: ${{ github.sha }}
 
+      - name: git log
+        run: |
+          git log -n 5
+
       - name: Check env
         run: |
           env
