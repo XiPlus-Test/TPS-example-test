@@ -34,7 +34,7 @@ jobs:
           list-files: 'csv'
           filters: |
             any:
-              - **
+              - '**'
 
       - name: Check env
         run: |
