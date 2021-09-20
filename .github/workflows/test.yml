@@ -104,7 +104,7 @@ jobs:
         run: |
           probs=$(python3 -c 'import os, json; print(json.dumps(os.listdir(os.path.expanduser("~/flags/build-pdf/"))))')
           echo $probs
-          echo "::set-output name=build-pdf::[$probs]"
+          echo "::set-output name=build-pdf::$probs"
 
       - name: Show outputs
         env:
