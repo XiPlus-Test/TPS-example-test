@@ -27,3 +27,15 @@ jobs:
       - name: Check env
         run: |
           env
+
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          list-files: 'csv'
+          filters: |
+            any:
+              - **
+
+      - name: Check env
+        run: |
+          echo ${{ steps.changes.outputs.any_files }}
