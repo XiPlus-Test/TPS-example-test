@@ -91,13 +91,13 @@ jobs:
       #     cd tps && sudo ./install-tps.sh
 
       - name: Build pdf
-        if: ${{ format('needs.check-{0}.outputs.build-pdf', matrix.problem) }}
+        if: ${{ format('needs.check-{0}.outputs.build-pdf', matrix.problem) }} == ${{ matrix.problem }}
         working-directory: ${{ matrix.problem }}
         run: |
           echo "Building "${{ matrix.problem }}
 
       - name: Not to build pdf
-        if: ! ${{ format('needs.check-{0}.outputs.build-pdf', matrix.problem) }}
+        if: ${{ format('needs.check-{0}.outputs.build-pdf', matrix.problem) }} != ${{ matrix.problem }}
         run: |
           echo "Not to build"${{ matrix.problem }}
 
