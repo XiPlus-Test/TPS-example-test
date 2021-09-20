@@ -73,7 +73,7 @@ jobs:
         id: env
         run: |
           echo "Checking pdf"
-          echo "::set-output name=pdf-${{ matrix.problem }}::"${{ matrix.problem }}
+          echo "::set-output name=pdf::"${{ matrix.problem }}
 
   build-pdf:
     name: build-pdf-${{ matrix.problem }}
