@@ -20,7 +20,7 @@ jobs:
 
       - name: git log
         run: |
-          git log -n 5
+          git log -n 5 | cat
 
       - name: Check env
         run: |
