@@ -14,16 +14,15 @@ jobs:
           fetch-depth: 0
 
       - name: Check Github env
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo github.event_name: ${{ github.event_name }}
           echo github.ref: ${{ github.ref }}
           echo github.sha: ${{ github.sha }}
           echo github.event.before: ${{ github.event.before }}
-
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
+          echo "$GITHUB_CONTEXT"
+          pwd
 
       - name: git log
         run: |
@@ -68,8 +67,12 @@ jobs:
             cover:
               - cover.tex
 
-      - name: Set env
-        if: steps.changes.outputs.pdf == 'true'
+      - name: Make flags dir
+        run: |
+          mkdir -p
+
+      - name: Set problem flag
+        if: steps.changes.outputs.pdf == 'true' || ${{ matrix.problem }} == 'pA' && steps.changes.outputs.cover == 'true'
         id: env
         run: |
           echo "Checking pdf"
