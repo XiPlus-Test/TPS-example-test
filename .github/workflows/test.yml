@@ -77,7 +77,6 @@ jobs:
 
   build-pdf:
     name: build-pdf-${{ matrix.problem }}
-    if: needs.check-${{ matrix.problem }}.outputs.build-pdf
     needs: check-${{ matrix.problem }}
     runs-on: ubuntu-18.04
     strategy:
@@ -92,9 +91,15 @@ jobs:
       #     cd tps && sudo ./install-tps.sh
 
       - name: Build pdf
+        if: needs.check-${{ matrix.problem }}.outputs.build-pdf
         working-directory: ${{ matrix.problem }}
         run: |
           echo "Building "${{ matrix.problem }}
+
+      - name: Not to build pdf
+        if: ! needs.check-${{ matrix.problem }}.outputs.build-pdf
+        run: |
+          echo "Not to build"${{ matrix.problem }}
 
   verify:
     name: verify-${{ matrix.problem }}
