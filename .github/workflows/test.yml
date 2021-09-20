@@ -52,6 +52,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Make flags dir
+        run: |
+          mkdir -p ~/flags/build-pdf/
+
       - uses: dorny/paths-filter@v2
         id: changes
         with:
@@ -71,12 +75,8 @@ jobs:
         run: |
           echo "$FILES"
 
-      - name: Make flags dir
-        run: |
-          mkdir -p ~/flags/build-pdf/
-
       - name: Set problem flag
-        if: steps.changes.outputs.pdf == 'true' || (${{ matrix.problem }} == 'pA' && steps.changes.outputs.cover == 'true')
+        if: steps.changes.outputs.pdf == 'true' || (matrix.problem == 'pA' && steps.changes.outputs.cover == 'true')
         run: |
           echo true > ~/flags/build-pdf/${{ matrix.problem }}
 
