@@ -22,7 +22,7 @@ jobs:
           echo github.event.base_ref: ${{ github.event.base_ref }}
           echo github.event.before: ${{ github.event.before }}
 
-     - name: Dump GitHub context
+      - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
