@@ -97,10 +97,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: flags
+          path: ~/flags/
 
       - name: build-pdf
         run: |
-          probs=$(ls -m ~/flags/build-pdf-*)
+          probs=$(ls -m ~/flags/build-pdf-* 2> /dev/null)
           echo $probs
           echo '::set-output name=build-pdf::[$probs]'
 
@@ -131,23 +132,23 @@ jobs:
         run: |
           echo "Building ${{ matrix.problem }}"
 
-  verify:
-    name: verify-${{ matrix.problem }}
-    runs-on: ubuntu-18.04
+  # verify:
+  #   name: verify-${{ matrix.problem }}
+  #   runs-on: ubuntu-18.04
 
-    strategy:
-      matrix:
-        problem: [pA, pB, pC]
+  #   strategy:
+  #     matrix:
+  #       problem: [pA, pB, pC]
 
-    steps:
-      - uses: actions/checkout@v2
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Install tps
-        run: |
-          git clone --depth 1 https://github.com/ioi-2017/tps.git
-          cd tps && sudo ./install-tps.sh
+  #     - name: Install tps
+  #       run: |
+  #         git clone --depth 1 https://github.com/ioi-2017/tps.git
+  #         cd tps && sudo ./install-tps.sh
 
-      - name: Verify ${{ matrix.problem }}
-        working-directory: ${{ matrix.problem }}
-        run: |
-          tps verify
+  #     - name: Verify ${{ matrix.problem }}
+  #       working-directory: ${{ matrix.problem }}
+  #       run: |
+  #         tps verify
