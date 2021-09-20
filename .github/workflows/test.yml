@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  check:
+  env:
     runs-on: ubuntu-18.04
 
     steps:
@@ -41,8 +41,63 @@ jobs:
         run: |
           echo ${{ steps.changes.outputs.any_files }}
 
+  check:
+    name: check-${{ matrix.problem }}
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        problem: [pA, pB, pC]
+    outputs:
+      build-pdf: ${{ steps.env.outputs.pdf }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          list-files: 'csv'
+          filters: |
+            pdf:
+              - ${{ matrix.problem }}/statement/*.jpg
+              - ${{ matrix.problem }}/statement/index.md
+              - ${{ matrix.problem }}/problem.json
+              - template.tex
+            cover:
+              - cover.tex
+
+      - name: Set env
+        if: steps.changes.outputs.pdf == 'true'
+        id: env
+        run: |
+          echo "Checking pdf"
+          echo "::set-output name=pdf::"${{ matrix.problem }}
+
+  build-pdf:
+    name: build-pdf-${{ matrix.problem }}
+    if: needs.check-${{ matrix.problem }}.outputs.build-pdf
+    needs: check-${{ matrix.problem }}
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        problem: [pA, pB, pC]
+    steps:
+      - uses: actions/checkout@v2
+
+      # - name: Install tps
+      #   run: |
+      #     git clone --depth 1 https://github.com/ioi-2017/tps.git
+      #     cd tps && sudo ./install-tps.sh
+
+      - name: Build pdf
+        working-directory: ${{ matrix.problem }}
+        run: |
+          echo "Building "${{ matrix.problem }}
+
   verify:
-    name: verify_${{ matrix.problem }}
+    name: verify-${{ matrix.problem }}
     runs-on: ubuntu-18.04
 
     strategy:
