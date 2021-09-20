@@ -90,8 +90,10 @@ jobs:
       #     git clone --depth 1 https://github.com/ioi-2017/tps.git
       #     cd tps && sudo ./install-tps.sh
       - name: env
+        env:
+          NEEDS: ${{ toJson(needs) }}
         run: |
-          echo ${{ toJson(needs) }}
+          echo "$NEEDS"
           echo ${{ format('needs.check-{0}.outputs.build-pdf', matrix.problem) }}
           echo ${{ matrix.problem }}
 
