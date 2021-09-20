@@ -97,7 +97,7 @@ jobs:
           echo "Building "${{ matrix.problem }}
 
       - name: Not to build pdf
-        if: ! needs.check-${{ matrix.problem }}.outputs.build-pdf
+        if: ! ${{ needs.check-${{ matrix.problem }}.outputs.build-pdf }}
         run: |
           echo "Not to build"${{ matrix.problem }}
 
