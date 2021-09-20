@@ -118,7 +118,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        problem: ${{ needs.check-post.outputs.build-pdf }}
+        problem: ${{ fromJson(needs.check-post.outputs.build-pdf) }}
 
     steps:
       - uses: actions/checkout@v2
