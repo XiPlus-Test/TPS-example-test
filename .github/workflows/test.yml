@@ -10,6 +10,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        fetch-depth: 5
 
       - name: Check Github env
         run: |
@@ -20,7 +21,7 @@ jobs:
 
       - name: git log
         run: |
-          git log -n 5 | cat
+          git log -n 5
 
       - name: Check env
         run: |
