@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 5
+          fetch-depth: 0
 
       - name: Check Github env
         run: |
@@ -42,6 +42,7 @@ jobs:
           echo ${{ steps.changes.outputs.any_files }}
 
   verify:
+    name: verify_${{ matrix.problem }}
     runs-on: ubuntu-18.04
 
     strategy:
