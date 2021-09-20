@@ -36,6 +36,6 @@ jobs:
             any:
               - '**'
 
-      - name: Check env
+      - name: Show changes
         run: |
           echo ${{ steps.changes.outputs.any_files }}

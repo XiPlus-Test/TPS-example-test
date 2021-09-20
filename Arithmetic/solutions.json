@@ -3,9 +3,9 @@
 		"verdict": "model_solution"
 	},
 	"wa.cpp": {
-		"verdict": "partially_correct"
+		"verdict": "correct"
 	},
 	"re.cpp": {
-		"verdict": "partially_correct"
+		"verdict": "correct"
 	}
 }
