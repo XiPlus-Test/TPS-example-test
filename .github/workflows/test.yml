@@ -90,7 +90,7 @@ jobs:
     needs: check
     runs-on: ubuntu-18.04
     outputs:
-      build-pdf: ${{ steps.env.outputs.build-pdf }}
+      build-pdf: ${{ steps.build-pdf.outputs.build-pdf }}
 
     steps:
       - name: Download flags
@@ -100,10 +100,17 @@ jobs:
           path: ~/flags/
 
       - name: build-pdf
+        id: build-pdf
         run: |
           probs=$(cd ~/flags/build-pdf/ && ls -m 2> /dev/null)
           echo $probs
           echo '::set-output name=build-pdf::[${probs}]'
+
+      - name: Show outputs
+        env:
+          BUILDPDF: ${{ toJson(steps.build-pdf.outputs) }}
+        run: |
+          echo "$BUILDPDF"
 
   build-pdf:
     name: build-pdf-${{ matrix.problem }}
