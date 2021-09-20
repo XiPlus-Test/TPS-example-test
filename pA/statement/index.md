@@ -28,5 +28,4 @@
  - $1 \leq q \leq 10^4$
  - $1 \leq Q \leq 10^4$
 
-
 \subtasks

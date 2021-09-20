@@ -103,7 +103,7 @@ jobs:
         run: |
           probs=$(cd ~/flags/build-pdf/ && ls -m 2> /dev/null)
           echo $probs
-          echo '::set-output name=build-pdf::[$probs]'
+          echo '::set-output name=build-pdf::[${probs}]'
 
   build-pdf:
     name: build-pdf-${{ matrix.problem }}
