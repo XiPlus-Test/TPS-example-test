@@ -89,17 +89,17 @@ jobs:
       #   run: |
       #     git clone --depth 1 https://github.com/ioi-2017/tps.git
       #     cd tps && sudo ./install-tps.sh
+      - name: env
+        run: |
+          echo format('needs.check-{0}.outputs.build-pdf', matrix.problem)
+          echo ${{ format('needs.check-{0}.outputs.build-pdf', matrix.problem) }}
+          echo ${{ matrix.problem }}
 
       - name: Build pdf
-        if: ${{ format('needs.check-{0}.outputs.build-pdf', matrix.problem) }} == ${{ matrix.problem }}
+        if: ${{ format('needs.check-{0}.outputs.build-pdf', matrix.problem) }} != ${{ matrix.problem }}
         working-directory: ${{ matrix.problem }}
         run: |
-          echo "Building "${{ matrix.problem }}
-
-      - name: Not to build pdf
-        if: ${{ format('needs.check-{0}.outputs.build-pdf', matrix.problem) }} != ${{ matrix.problem }}
-        run: |
-          echo "Not to build"${{ matrix.problem }}
+          echo "Building ${{ matrix.problem }}"
 
   verify:
     name: verify-${{ matrix.problem }}
