@@ -102,7 +102,7 @@ jobs:
       - name: build-pdf
         id: build-pdf
         run: |
-          probs=$(cd ~/flags/build-pdf/ && ls -m 2> /dev/null)
+          probs=$(python3 -c 'import os, json; print(json.dumps(os.listdir("/home/xiplus/flags/build-pdf/")))')
           echo $probs
           echo "::set-output name=build-pdf::[$probs]"
 
