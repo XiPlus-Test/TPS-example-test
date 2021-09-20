@@ -11,6 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Check env
+      - name: Check Github env
         run: |
           echo GITHUB_SHA: $GITHUB_SHA
+
+      - name: Check env
+        run: |
+          env
