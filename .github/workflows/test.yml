@@ -10,7 +10,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        fetch-depth: 5
+        with:
+          fetch-depth: 5
 
       - name: Check Github env
         run: |
