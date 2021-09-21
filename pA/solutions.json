@@ -1,9 +1,9 @@
 {
 	"ac.cpp": {
-		"verdict": "model_solution"
+		"verdict": "correct"
 	},
 	"wa.cpp": {
-		"verdict": "correct"
+		"verdict": "model_solution"
 	},
 	"re.cpp": {
 		"verdict": "correct"

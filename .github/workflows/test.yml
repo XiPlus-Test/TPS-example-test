@@ -245,6 +245,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Setup git
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
       - name: Install dependencies
         run: |
           sudo apt-get install dos2unix python3-setuptools
@@ -269,13 +274,23 @@ jobs:
         run: |
           echo "Building input for ${{ matrix.problem }}"
           tps gen -s
+          git status
+          git add gen/data
+          git add tests/*.in
+          git add tests/*.out
+          git add tests/gen_summary
+          git add tests/mapping
+          git diff --cached --quiet || git commit -m "p${{ matrix.problem }} Build input and output"
 
-      - name: Build output
+      - name: Build outputs
         if: ${{ !contains(needs.check-post.outputs.build-input, matrix.problem) && contains(needs.check-post.outputs.build-output, matrix.problem) }}
         working-directory: p${{ matrix.problem }}
         run: |
           echo "Building output for ${{ matrix.problem }}"
           tps gen -s --no-gen
+          git status
+          git add tests/*.out
+          git diff --cached --quiet || git commit -m "p${{ matrix.problem }} Build output"
 
       - name: Check tests changes
         id: tests-changes
@@ -297,19 +312,11 @@ jobs:
           echo "Run solutions for ${{ matrix.problem }}"
           rm -f solutions-check.txt
           tps solutions | tee -a solutions-check.txt
-
-      - name: Commit tests
-        working-directory: p${{ matrix.problem }}
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
           git status
-          git add gen/data
-          git add tests/*.in
-          git add tests/*.out
-          git add tests/gen_summary
-          git add tests/mapping
           git add solutions-check.txt
+          git diff --cached --quiet || git commit -m "p${{ matrix.problem }} Run solutions"
+
+      - name: Push
+        run: |
           git pull
-          git diff --cached --quiet || git commit -m "Build tests"
           git push
