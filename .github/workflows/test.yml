@@ -56,12 +56,14 @@ jobs:
         run: |
           mkdir -p ~/flags/build-pdf/
           mkdir -p ~/flags/build-tests/
+          touch ~/flags/placeholder
 
       - name: Set env
+        id: env
         working-directory: ${{ matrix.problem }}
         run: |
           export model_solution=$(SOLUTIONS_JSON=./solutions.json python3 scripts/internal/get_model_solution.py)
-          echo $model_solution
+          echo "::set-output name=model_solution::$model_solution"
 
       - uses: dorny/paths-filter@v2
         id: changes
@@ -77,7 +79,7 @@ jobs:
               - cover.tex
             input:
               - ${{ matrix.problem }}/gen/**
-              - ${{ matrix.problem }}/solutions/$model_solution
+              - ${{ matrix.problem }}/solutions/${{ steps.env.outputs.model_solution }}
 
       - name: Show changed files
         env:
