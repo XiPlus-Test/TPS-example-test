@@ -178,7 +178,7 @@ jobs:
       - name: Build pdf
         run: |
           for prob in $(cat /home/runner/flags/*); do
-            cd p${prob} && tps statement
+            cd p${prob} && tps statement && cd ..
           done
 
       - name: Merge cover into pA
