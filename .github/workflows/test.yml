@@ -95,12 +95,12 @@ jobs:
 
       - name: Check changed lines
         run: |
-          git diff ${{ github.event.before }}..HEAD -U0 | grep '"contest_name"\|"problem_label"\|"name"\|"title"\|"memory_limit"\|"time_limit"'
+          git diff ${{ github.event.before }}..HEAD -U0 ${{ matrix.problem }}/problem.json | grep '"contest_name"\|"problem_label"\|"name"\|"title"\|"memory_limit"\|"time_limit"'
           if [ $? -eq 0 ]; then
             echo "Change for pdf";
           fi
 
-          git diff ${{ github.event.before }}..HEAD -U0 | grep '"time_limit"'
+          git diff ${{ github.event.before }}..HEAD -U0 ${{ matrix.problem }}/problem.json | grep '"time_limit"'
           if [ $? -eq 0 ]; then
             echo "Change for time_limit";
           fi
