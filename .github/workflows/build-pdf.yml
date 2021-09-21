@@ -107,6 +107,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Download flags
+        uses: actions/download-artifact@v2
+        with:
+          name: flags
+          path: /home/runner/flags/
+
       # - name: Install tps
       #   run: |
       #     git clone https://github.com/ioi-2017/tps.git
