@@ -55,8 +55,9 @@ jobs:
       - name: Make flags dir
         run: |
           mkdir -p ~/flags/build-pdf/
+          touch ~/flags/build-pdf/.keep
           mkdir -p ~/flags/build-tests/
-          touch ~/flags/placeholder
+          touch ~/flags/build-tests/.keep
 
       - name: Set env
         id: env
@@ -66,7 +67,7 @@ jobs:
           echo "::set-output name=model_solution::$model_solution"
 
       - run: |
-          echo "${{ matrix.problem }}/solutions/${{ steps.env.outputs.model_solution }}"
+          echo "${{ matrix.problem }}/solution/${{ steps.env.outputs.model_solution }}"
 
       - uses: dorny/paths-filter@v2
         id: changes
@@ -122,8 +123,9 @@ jobs:
 
       - name: build-pdf
         id: build-pdf
+        working-directory: ~/flags/build-pdf/
         run: |
-          probs=$(python3 -c 'import os, json; print(json.dumps(os.listdir(os.path.expanduser("~/flags/build-pdf/"))))')
+          probs=$(python3 -c 'import os, glob; print(json.dumps(glob.glob("*")))')
           echo $probs
           echo "::set-output name=build-pdf::$probs"
 
@@ -135,8 +137,9 @@ jobs:
 
       - name: build-tests
         id: build-tests
+        working-directory: ~/flags/build-tests/
         run: |
-          probs=$(python3 -c 'import os, json; print(json.dumps(os.listdir(os.path.expanduser("~/flags/build-tests/"))))')
+          probs=$(python3 -c 'import os, glob; print(json.dumps(glob.glob("*")))')
           echo $probs
           echo "::set-output name=build-tests::$probs"
 
