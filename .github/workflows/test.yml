@@ -65,6 +65,9 @@ jobs:
           export model_solution=$(SOLUTIONS_JSON=./solutions.json python3 scripts/internal/get_model_solution.py)
           echo "::set-output name=model_solution::$model_solution"
 
+      - run: |
+          echo "${{ matrix.problem }}/solutions/${{ steps.env.outputs.model_solution }}"
+
       - uses: dorny/paths-filter@v2
         id: changes
         with:
