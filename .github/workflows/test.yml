@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        problem: [pA, pB, pC]
+        problem: [A, B, C]
 
     steps:
       - uses: actions/checkout@v2
@@ -80,13 +80,10 @@ jobs:
 
       - name: Set env
         id: env
-        working-directory: ${{ matrix.problem }}
+        working-directory: p${{ matrix.problem }}
         run: |
           export model_solution=$(SOLUTIONS_JSON=./solutions.json python3 scripts/internal/get_model_solution.py)
           echo "::set-output name=model_solution::$model_solution"
-
-      - run: |
-          echo "${{ matrix.problem }}/solution/${{ steps.env.outputs.model_solution }}"
 
       - uses: dorny/paths-filter@v2
         id: changes
@@ -94,18 +91,18 @@ jobs:
           list-files: 'json'
           filters: |
             pdf:
-              - ${{ matrix.problem }}/statement/*.jpg
-              - ${{ matrix.problem }}/statement/index.md
-              - ${{ matrix.problem }}/problem.json
+              - p${{ matrix.problem }}/statement/*.jpg
+              - p${{ matrix.problem }}/statement/index.md
+              - p${{ matrix.problem }}/problem.json
               - template.tex
             cover:
               - cover.tex
             input:
-              - ${{ matrix.problem }}/gen/**
+              - p${{ matrix.problem }}/gen/**
             output:
-              - ${{ matrix.problem }}/solution/${{ steps.env.outputs.model_solution }}
+              - p${{ matrix.problem }}/solution/${{ steps.env.outputs.model_solution }}
             solutions:
-              - ${{ matrix.problem }}/solution/**
+              - p${{ matrix.problem }}/solution/**
 
       - name: Show changed files
         env:
@@ -114,7 +111,7 @@ jobs:
           echo "$FILES"
 
       - name: Set problem flag
-        if: steps.changes.outputs.pdf == 'true' || (matrix.problem == 'pA' && steps.changes.outputs.cover == 'true')
+        if: steps.changes.outputs.pdf == 'true' || (matrix.problem == 'A' && steps.changes.outputs.cover == 'true')
         run: |
           echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
 
@@ -138,14 +135,14 @@ jobs:
         run: |
           set +e
 
-          git diff ${{ github.event.before }}..HEAD -U0 ${{ matrix.problem }}/problem.json | grep '"contest_name"\|"problem_label"\|"name"\|"title"\|"memory_limit"\|"time_limit"'
+          git diff ${{ github.event.before }}..HEAD -U0 p${{ matrix.problem }}/problem.json | grep '"contest_name"\|"problem_label"\|"name"\|"title"\|"memory_limit"\|"time_limit"'
           if [ $? -eq 0 ]; then
             echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
           else
             echo "No changes in problem.json for pdf";
           fi
 
-          git diff ${{ github.event.before }}..HEAD -U0 ${{ matrix.problem }}/problem.json | grep '"time_limit"'
+          git diff ${{ github.event.before }}..HEAD -U0 p${{ matrix.problem }}/problem.json | grep '"time_limit"'
           if [ $? -eq 0 ]; then
             echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
             echo true > /home/runner/flags/run-solutions/${{ matrix.problem }}
@@ -153,7 +150,7 @@ jobs:
             echo "No changes in problem.json for solutions";
           fi
 
-          git diff ${{ github.event.before }}..HEAD -U0 ${{ matrix.problem }}/solutions.json | grep '"model_solution"'
+          git diff ${{ github.event.before }}..HEAD -U0 p${{ matrix.problem }}/solutions.json | grep '"model_solution"'
           if [ $? -eq 0 ]; then
             echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
             echo true > /home/runner/flags/build-input/${{ matrix.problem }}
@@ -161,7 +158,7 @@ jobs:
             echo "No changes in solutions.json for input";
           fi
 
-          git diff ${{ github.event.before }}..HEAD -U0 ${{ matrix.problem }}/subtasks.json | grep '"index"\|"score"\|"text"'
+          git diff ${{ github.event.before }}..HEAD -U0 p${{ matrix.problem }}/subtasks.json | grep '"index"\|"score"\|"text"'
           if [ $? -eq 0 ]; then
             echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
           else
@@ -262,7 +259,7 @@ jobs:
         id: build-input
         working-directory: /home/runner/flags/build-input/
         run: |
-          probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
+          probs=$(python3 -c 'import glob; print("".join(glob.glob("*")))')
           echo $probs
           echo "::set-output name=build-input::$probs"
 
@@ -270,7 +267,7 @@ jobs:
         id: build-output
         working-directory: /home/runner/flags/build-output/
         run: |
-          probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
+          probs=$(python3 -c 'import glob; print(json.dumps(glob.glob("*")))')
           echo $probs
           echo "::set-output name=build-output::$probs"
 
@@ -278,7 +275,7 @@ jobs:
         id: run-solutions
         working-directory: /home/runner/flags/run-solutions/
         run: |
-          probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
+          probs=$(python3 -c 'import glob; print(json.dumps(glob.glob("*")))')
           echo $probs
           echo "::set-output name=run-solutions::$probs"
 
@@ -315,10 +312,6 @@ jobs:
     strategy:
       matrix:
         problem: ${{ fromJson(needs.check-post.outputs.build-tests) }}
-    env:
-      build-input: ${{ fromJson(needs.check-post.outputs.build-input) }}
-      build-output: ${{ fromJson(needs.check-post.outputs.build-output) }}
-      run-solutions: ${{ fromJson(needs.check-post.outputs.run-solutions) }}
 
     steps:
       - uses: actions/checkout@v2
@@ -332,14 +325,14 @@ jobs:
           echo "$ENVS"
 
       - name: Build input
-        if: contains(env.build-input, matrix.problem)
-        working-directory: ${{ matrix.problem }}
+        if: contains(needs.check-post.outputs.build-input, matrix.problem)
+        working-directory: p${{ matrix.problem }}
         run: |
           echo "Building input for ${{ matrix.problem }}"
 
       - name: Build output
-        if: ${{ !contains(env.build-input, matrix.problem) }} && ${{ contains(env.build-output, matrix.problem) }}
-        working-directory: ${{ matrix.problem }}
+        if: ${{ !contains(needs.check-post.outputs.build-input, matrix.problem) }} && ${{ contains(needs.check-post.outputs.build-output, matrix.problem) }}
+        working-directory: p${{ matrix.problem }}
         run: |
           echo "Building output for ${{ matrix.problem }}"
 
@@ -348,7 +341,7 @@ jobs:
         run: |
           set +e
 
-          git diff HEAD --quiet ${{ matrix.problem }}/tests/
+          git diff HEAD --quiet p${{ matrix.problem }}/tests/
           if [ $? -eq 0 ]; then
             echo "::set-output name=changed::true"
             echo "Tests changed"
@@ -357,8 +350,8 @@ jobs:
           fi
 
       - name: Run solutions
-        if: contains(env.run-solutions, matrix.problem) || steps.tests-changes.outputs.changed == 'true'
-        working-directory: ${{ matrix.problem }}
+        if: contains(needs.check-post.outputs.run-solutions, matrix.problem) || steps.tests-changes.outputs.changed == 'true'
+        working-directory: p${{ matrix.problem }}
         run: |
           echo "Run solutions for ${{ matrix.problem }}"
 
@@ -367,7 +360,7 @@ jobs:
 
   #   strategy:
   #     matrix:
-  #       problem: [pA, pB, pC]
+  #       problem: [A, B, C]
 
   #   steps:
   #     - uses: actions/checkout@v2
