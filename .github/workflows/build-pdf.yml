@@ -166,9 +166,6 @@ jobs:
         id: target
         working-directory: /home/runner/flags/
         run: |
-          pwd
-          ls .
-          ls -m .
           probs=$(ls -m .)
           echo $probs
           echo "::set-output name=problems::$probs"
@@ -180,7 +177,6 @@ jobs:
 
       - name: Build pdf
         run: |
-          echo ${{ steps.target.outputs.problems }}
           for prob in $(cat /home/runner/flags/*); do
             cd p${prob} && tps statement
           done
@@ -191,6 +187,11 @@ jobs:
           pdfunite cover.pdf pA/statement/index.pdf pA/statement/index-with-cover.pdf
           rm pA/statement/index.pdf
           mv pA/statement/index-with-cover.pdf pA/statement/index.pdf
+
+      - name: Merge pdfs
+        run: |
+          mkdir -p pA/attachments
+          pdfunite pA/statement/index.pdf pB/statement/index.pdf pC/statement/index.pdf pA/attachments/problems.pdf
 
       - name: Check diff
         run: |
