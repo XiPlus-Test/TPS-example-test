@@ -285,7 +285,7 @@ jobs:
           echo "Building input for ${{ matrix.problem }}"
 
       - name: Build output
-        if: !contains(env.build-input, matrix.problem) && contains(env.build-output, matrix.problem)
+        if: ${{ !contains(env.build-input, matrix.problem) }} && ${{ contains(env.build-output, matrix.problem) }}
         working-directory: ${{ matrix.problem }}
         run: |
           echo "Building output for ${{ matrix.problem }}"
