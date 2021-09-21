@@ -188,6 +188,7 @@ jobs:
 
   check-post:
     needs: [check-push, check-manually]
+    if: always()
     runs-on: ubuntu-18.04
     outputs:
       build-pdf: ${{ steps.build-pdf.outputs.build-pdf }}
