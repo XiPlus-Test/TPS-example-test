@@ -41,7 +41,6 @@ jobs:
           echo ${{ steps.changes.outputs.any_files }}
 
   check:
-    name: check-${{ matrix.problem }}
     runs-on: ubuntu-18.04
     strategy:
       matrix:
@@ -83,13 +82,28 @@ jobs:
               - cover.tex
             input:
               - ${{ matrix.problem }}/gen/**
+            output:
               - ${{ matrix.problem }}/solution/${{ steps.env.outputs.model_solution }}
+            solutions:
+              - ${{ matrix.problem }}/solution/**
 
       - name: Show changed files
         env:
           FILES: ${{ toJson(steps.changes.outputs) }}
         run: |
           echo "$FILES"
+
+      - name: Check changed lines
+        run: |
+          git diff ${{ github.event.before }}..HEAD -U0 | grep '"contest_name"\|"problem_label"\|"name"\|"title"\|"memory_limit"\|"time_limit"'
+          if [ $? -eq 0 ]; then
+            echo "Change for pdf";
+          fi
+
+          git diff ${{ github.event.before }}..HEAD -U0 | grep '"time_limit"'
+          if [ $? -eq 0 ]; then
+            echo "Change for time_limit";
+          fi
 
       - name: Set problem flag
         if: steps.changes.outputs.pdf == 'true' || (matrix.problem == 'pA' && steps.changes.outputs.cover == 'true')
@@ -139,7 +153,6 @@ jobs:
 
   build-pdf:
     if: needs.check-post.outputs.build-pdf != '[]'
-    name: build-pdf-${{ matrix.problem }}
     needs: check-post
     runs-on: ubuntu-18.04
     strategy:
@@ -166,7 +179,6 @@ jobs:
 
   build-tests:
     if: needs.check-post.outputs.build-tests != '[]'
-    name: build-tests-${{ matrix.problem }}
     needs: check-post
     runs-on: ubuntu-18.04
     strategy:
@@ -188,7 +200,6 @@ jobs:
           echo "Building ${{ matrix.problem }}"
 
   # verify:
-  #   name: verify-${{ matrix.problem }}
   #   runs-on: ubuntu-18.04
 
   #   strategy:
