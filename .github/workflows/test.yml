@@ -231,6 +231,9 @@ jobs:
     outputs:
       build-pdf: ${{ steps.build-pdf.outputs.build-pdf }}
       build-tests: ${{ steps.build-tests.outputs.build-tests }}
+      build-input: ${{ steps.build-input.outputs.build-input }}
+      build-output: ${{ steps.build-output.outputs.build-output }}
+      run-solutions: ${{ steps.run-solutions.outputs.run-solutions }}
 
     steps:
       - name: Download flags
@@ -254,6 +257,38 @@ jobs:
           probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
           echo $probs
           echo "::set-output name=build-tests::$probs"
+
+      - name: build-tests
+        id: build-tests
+        working-directory: /home/runner/flags/build-tests/
+        run: |
+          probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
+          echo $probs
+          echo "::set-output name=build-tests::$probs"
+
+      - name: build-input
+        id: build-input
+        working-directory: /home/runner/flags/build-input/
+        run: |
+          probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
+          echo $probs
+          echo "::set-output name=build-input::$probs"
+
+      - name: build-output
+        id: build-output
+        working-directory: /home/runner/flags/build-output/
+        run: |
+          probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
+          echo $probs
+          echo "::set-output name=build-output::$probs"
+
+      - name: run-solutions
+        id: run-solutions
+        working-directory: /home/runner/flags/run-solutions/
+        run: |
+          probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
+          echo $probs
+          echo "::set-output name=run-solutions::$probs"
 
   build-pdf:
     if: needs.check-post.outputs.build-pdf != '[]'
