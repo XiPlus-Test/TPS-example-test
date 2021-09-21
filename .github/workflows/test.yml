@@ -283,7 +283,7 @@ jobs:
           echo "::set-output name=run-solutions::$probs"
 
   build-pdf:
-    if: needs.check-post.outputs.build-pdf != '[]'
+    if: always() && needs.check-post.outputs.build-pdf != '[]'
     needs: check-post
     runs-on: ubuntu-18.04
     strategy:
@@ -309,7 +309,7 @@ jobs:
           echo "Building ${{ matrix.problem }}"
 
   build-tests:
-    if: needs.check-post.outputs.build-tests != '[]'
+    if: always() && needs.check-post.outputs.build-tests != '[]'
     needs: check-post
     runs-on: ubuntu-18.04
     strategy:
