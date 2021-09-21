@@ -6,16 +6,16 @@ on:
     inputs:
       pdf:
         description: 'Problem labels to build pdf'
-        default: 'ABC'
+        default: ''
       input:
         description: 'Problem labels to build input'
-        default: 'ABC'
+        default: ''
       output:
         description: 'Problem labels to build output'
-        default: 'ABC'
+        default: ''
       solutions:
         description: 'Problem labels to run solutions'
-        default: 'ABC'
+        default: ''
 
 jobs:
   env:
@@ -71,6 +71,12 @@ jobs:
           touch /home/runner/flags/build-pdf/.keep
           mkdir -p /home/runner/flags/build-tests/
           touch /home/runner/flags/build-tests/.keep
+          mkdir -p /home/runner/flags/build-input/
+          touch /home/runner/flags/build-input/.keep
+          mkdir -p /home/runner/flags/build-output/
+          touch /home/runner/flags/build-output/.keep
+          mkdir -p /home/runner/flags/run-solutions/
+          touch /home/runner/flags/run-solutions/.keep
 
       - name: Set env
         id: env
@@ -156,6 +162,12 @@ jobs:
           touch /home/runner/flags/build-pdf/.keep
           mkdir -p /home/runner/flags/build-tests/
           touch /home/runner/flags/build-tests/.keep
+          mkdir -p /home/runner/flags/build-input/
+          touch /home/runner/flags/build-input/.keep
+          mkdir -p /home/runner/flags/build-output/
+          touch /home/runner/flags/build-output/.keep
+          mkdir -p /home/runner/flags/run-solutions/
+          touch /home/runner/flags/run-solutions/.keep
 
       - name: Set problem flag
         if: contains(github.event.inputs.pdf, matrix.problem)
@@ -250,6 +262,10 @@ jobs:
     strategy:
       matrix:
         problem: ${{ fromJson(needs.check-post.outputs.build-tests) }}
+    env:
+      build-input: ${{ fromJson(needs.check-post.outputs.build-input) }}
+      build-output: ${{ fromJson(needs.check-post.outputs.build-output) }}
+      run-solutions: ${{ fromJson(needs.check-post.outputs.run-solutions) }}
 
     steps:
       - uses: actions/checkout@v2
@@ -257,13 +273,28 @@ jobs:
       - name: env
         env:
           NEEDS: ${{ toJson(needs) }}
+          ENVS: ${{ toJson(env) }}
         run: |
           echo "$NEEDS"
+          echo "$ENVS"
 
-      - name: Build pdf
+      - name: Build input
+        if: contains(env.build-input, matrix.problem)
         working-directory: ${{ matrix.problem }}
         run: |
-          echo "Building ${{ matrix.problem }}"
+          echo "Building input for ${{ matrix.problem }}"
+
+      - name: Build output
+        if: ! contains(env.build-input, matrix.problem) && contains(env.build-output, matrix.problem)
+        working-directory: ${{ matrix.problem }}
+        run: |
+          echo "Building output for ${{ matrix.problem }}"
+
+      - name: Run solutions
+        if: contains(env.run-solutions, matrix.problem)
+        working-directory: ${{ matrix.problem }}
+        run: |
+          echo "Run solutions for ${{ matrix.problem }}"
 
   # verify:
   #   runs-on: ubuntu-18.04
