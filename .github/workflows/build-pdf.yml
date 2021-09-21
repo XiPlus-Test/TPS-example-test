@@ -91,7 +91,7 @@ jobs:
       - name: Set problem flag
         if: contains(github.event.inputs.target, matrix.problem)
         run: |
-          echo true > /home/runner/flags/${{ matrix.problem }}
+          echo "${{ matrix.problem }}" > /home/runner/flags/${{ matrix.problem }}
 
       - name: Upload flags
         uses: actions/upload-artifact@v2
