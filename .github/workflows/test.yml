@@ -258,14 +258,6 @@ jobs:
           echo $probs
           echo "::set-output name=build-tests::$probs"
 
-      - name: build-tests
-        id: build-tests
-        working-directory: /home/runner/flags/build-tests/
-        run: |
-          probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
-          echo $probs
-          echo "::set-output name=build-tests::$probs"
-
       - name: build-input
         id: build-input
         working-directory: /home/runner/flags/build-input/
