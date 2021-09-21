@@ -176,6 +176,9 @@ jobs:
       - name: Build pdfs
         run: |
           echo ${{ steps.target.outputs.problems }}
+          for prob in $(cat /home/runner/flags/*); do
+            echo "$prob";
+          done
 
       # - name: Commit pdf
       #   run: |
