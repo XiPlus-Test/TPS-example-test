@@ -177,7 +177,7 @@ jobs:
         run: |
           echo ${{ steps.target.outputs.problems }}
           for prob in $(cat /home/runner/flags/*); do
-            echo "$prob";
+            echo "build-${prob}-pdf";
           done
 
       # - name: Commit pdf
