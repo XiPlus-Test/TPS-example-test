@@ -83,7 +83,7 @@ jobs:
               - cover.tex
             input:
               - ${{ matrix.problem }}/gen/**
-              - ${{ matrix.problem }}/solutions/${{ steps.env.outputs.model_solution }}
+              - ${{ matrix.problem }}/solution/${{ steps.env.outputs.model_solution }}
 
       - name: Show changed files
         env:
@@ -125,7 +125,7 @@ jobs:
         id: build-pdf
         working-directory: ~/flags/build-pdf/
         run: |
-          probs=$(python3 -c 'import os, glob; print(json.dumps(glob.glob("*")))')
+          probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
           echo $probs
           echo "::set-output name=build-pdf::$probs"
 
@@ -139,7 +139,7 @@ jobs:
         id: build-tests
         working-directory: ~/flags/build-tests/
         run: |
-          probs=$(python3 -c 'import os, glob; print(json.dumps(glob.glob("*")))')
+          probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
           echo $probs
           echo "::set-output name=build-tests::$probs"
 
