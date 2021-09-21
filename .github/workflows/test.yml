@@ -142,7 +142,7 @@ jobs:
           if [ $? -eq 0 ]; then
             echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
           else
-            echo "No change in problem.json for pdf";
+            echo "No changes in problem.json for pdf";
           fi
 
           git diff ${{ github.event.before }}..HEAD -U0 ${{ matrix.problem }}/problem.json | grep '"time_limit"'
@@ -150,7 +150,7 @@ jobs:
             echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
             echo true > /home/runner/flags/run-solutions/${{ matrix.problem }}
           else
-            echo "No change in problem.json for solutions";
+            echo "No changes in problem.json for solutions";
           fi
 
           git diff ${{ github.event.before }}..HEAD -U0 ${{ matrix.problem }}/solutions.json | grep '"model_solution"'
@@ -158,14 +158,14 @@ jobs:
             echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
             echo true > /home/runner/flags/build-input/${{ matrix.problem }}
           else
-            echo "No change in solutions.json for input";
+            echo "No changes in solutions.json for input";
           fi
 
           git diff ${{ github.event.before }}..HEAD -U0 ${{ matrix.problem }}/subtasks.json | grep '"index"\|"score"\|"text"'
           if [ $? -eq 0 ]; then
             echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
           else
-            echo "No change in subtasks.json for pdf";
+            echo "No changes in subtasks.json for pdf";
           fi
 
       - name: Upload flags
@@ -343,8 +343,21 @@ jobs:
         run: |
           echo "Building output for ${{ matrix.problem }}"
 
+      - name: Check tests changes
+        id: tests-changes
+        run: |
+          set +e
+
+          git diff HEAD --quiet ${{ matrix.problem }}/tests/
+          if [ $? -eq 0 ]; then
+            echo "::set-output name=changed::true"
+            echo "Tests changed"
+          else
+            echo "No changes in tests";
+          fi
+
       - name: Run solutions
-        if: contains(env.run-solutions, matrix.problem)
+        if: contains(env.run-solutions, matrix.problem) || steps.tests-changes.outputs.changed == 'true'
         working-directory: ${{ matrix.problem }}
         run: |
           echo "Run solutions for ${{ matrix.problem }}"
