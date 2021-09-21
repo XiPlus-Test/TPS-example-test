@@ -3,7 +3,7 @@ name: TPS verify
 on:
   push:
     path:
-      - '*/**'
+      - 'p*/**'
   workflow_dispatch:
     inputs:
       target:
