@@ -369,6 +369,8 @@ jobs:
 
       - name: Check diffs
         run: |
+          ls
+          tree
           git diff --name-only
 
   build-tests:
