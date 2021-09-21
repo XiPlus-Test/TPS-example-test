@@ -4,9 +4,6 @@ on:
   # push:
   workflow_dispatch:
     inputs:
-      pdf:
-        description: 'Problem labels to build pdf'
-        default: ''
       input:
         description: 'Problem labels to build input'
         default: ''
@@ -67,8 +64,6 @@ jobs:
 
       - name: Make flags dir
         run: |
-          mkdir -p /home/runner/flags/build-pdf/
-          touch /home/runner/flags/build-pdf/.keep
           mkdir -p /home/runner/flags/build-tests/
           touch /home/runner/flags/build-tests/.keep
           mkdir -p /home/runner/flags/build-input/
@@ -90,13 +85,6 @@ jobs:
         with:
           list-files: 'json'
           filters: |
-            pdf:
-              - p${{ matrix.problem }}/statement/*.jpg
-              - p${{ matrix.problem }}/statement/index.md
-              - p${{ matrix.problem }}/problem.json
-              - template.tex
-            cover:
-              - cover.tex
             input:
               - p${{ matrix.problem }}/gen/**
             output:
@@ -109,11 +97,6 @@ jobs:
           FILES: ${{ toJson(steps.changes.outputs) }}
         run: |
           echo "$FILES"
-
-      - name: Set problem flag
-        if: steps.changes.outputs.pdf == 'true' || (matrix.problem == 'A' && steps.changes.outputs.cover == 'true')
-        run: |
-          echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
 
       - name: Set input flag
         if: steps.changes.outputs.input == 'true'
@@ -135,13 +118,6 @@ jobs:
         run: |
           set +e
 
-          git diff ${{ github.event.before }}..HEAD -U0 p${{ matrix.problem }}/problem.json | grep '"contest_name"\|"problem_label"\|"name"\|"title"\|"memory_limit"\|"time_limit"'
-          if [ $? -eq 0 ]; then
-            echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
-          else
-            echo "No changes in problem.json for pdf";
-          fi
-
           git diff ${{ github.event.before }}..HEAD -U0 p${{ matrix.problem }}/problem.json | grep '"time_limit"'
           if [ $? -eq 0 ]; then
             echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
@@ -156,13 +132,6 @@ jobs:
             echo true > /home/runner/flags/build-input/${{ matrix.problem }}
           else
             echo "No changes in solutions.json for input";
-          fi
-
-          git diff ${{ github.event.before }}..HEAD -U0 p${{ matrix.problem }}/subtasks.json | grep '"index"\|"score"\|"text"'
-          if [ $? -eq 0 ]; then
-            echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
-          else
-            echo "No changes in subtasks.json for pdf";
           fi
 
       - name: Upload flags
@@ -181,8 +150,6 @@ jobs:
     steps:
       - name: Make flags dir
         run: |
-          mkdir -p /home/runner/flags/build-pdf/
-          touch /home/runner/flags/build-pdf/.keep
           mkdir -p /home/runner/flags/build-tests/
           touch /home/runner/flags/build-tests/.keep
           mkdir -p /home/runner/flags/build-input/
@@ -191,11 +158,6 @@ jobs:
           touch /home/runner/flags/build-output/.keep
           mkdir -p /home/runner/flags/run-solutions/
           touch /home/runner/flags/run-solutions/.keep
-
-      - name: Set problem flag
-        if: contains(github.event.inputs.pdf, matrix.problem)
-        run: |
-          echo true > /home/runner/flags/build-pdf/p${{ matrix.problem }}
 
       - name: Set input flag
         if: contains(github.event.inputs.input, matrix.problem)
@@ -226,7 +188,6 @@ jobs:
     if: always()
     runs-on: ubuntu-18.04
     outputs:
-      build-pdf: ${{ steps.build-pdf.outputs.build-pdf }}
       build-tests: ${{ steps.build-tests.outputs.build-tests }}
       build-input: ${{ steps.build-input.outputs.build-input }}
       build-output: ${{ steps.build-output.outputs.build-output }}
@@ -238,14 +199,6 @@ jobs:
         with:
           name: flags
           path: /home/runner/flags/
-
-      - name: build-pdf
-        id: build-pdf
-        working-directory: /home/runner/flags/build-pdf/
-        run: |
-          probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
-          echo $probs
-          echo "::set-output name=build-pdf::$probs"
 
       - name: build-tests
         id: build-tests
@@ -278,98 +231,6 @@ jobs:
           probs=$(python3 -c 'import glob; print("".join(glob.glob("*")))')
           echo $probs
           echo "::set-output name=run-solutions::$probs"
-
-  build-pdf:
-    if: always() && needs.check-post.outputs.build-pdf != '[]'
-    needs: check-post
-    runs-on: ubuntu-18.04
-    strategy:
-      matrix:
-        problem: ${{ fromJson(needs.check-post.outputs.build-pdf) }}
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Install tps
-        run: |
-          git clone https://github.com/ioi-2017/tps.git
-          cd tps && sudo ./install-tps.sh
-
-      - name: Install pandoc
-        run: |
-          wget https://github.com/jgm/pandoc/releases/download/2.10.1/pandoc-2.10.1-1-amd64.deb
-          sudo dpkg -i pandoc-2.10.1-1-amd64.deb
-
-      - name: Install xetex
-        run: |
-          sudo add-apt-repository ppa:jonathonf/texlive-2019
-          sudo apt-get update
-          sudo apt-get install texlive-xetex
-
-      - name: Install pdfunite
-        run: |
-          sudo apt-get install poppler-utils
-
-      - name: Install fonts
-        run: |
-          sudo mkdir -p /usr/share/fonts/opentype/noto
-          wget -nv https://noto-website-2.storage.googleapis.com/pkgs/NotoSansCJK-Regular.ttc.zip
-          unzip NotoSansCJK-Regular.ttc.zip -d NotoSansCJK-Regular
-          ls -al NotoSansCJK-Regular
-          sudo cp NotoSansCJK-Regular/NotoSansCJK-Regular.ttc /usr/share/fonts/opentype/noto
-          wget -nv https://noto-website-2.storage.googleapis.com/pkgs/NotoSansCJK-Bold.ttc.zip
-          unzip NotoSansCJK-Bold.ttc.zip -d NotoSansCJK-Bold
-          ls -al NotoSansCJK-Bold
-          sudo cp NotoSansCJK-Bold/NotoSansCJK-Bold.ttc /usr/share/fonts/opentype/noto
-          ls -al /usr/share/fonts/opentype/noto
-          sudo fc-cache -f -v
-
-      - name: env
-        env:
-          NEEDS: ${{ toJson(needs) }}
-        run: |
-          echo "$NEEDS"
-
-      - name: Build cover
-        if: matrix.problem == 'A'
-        run: |
-          xelatex cover.tex
-
-      - name: Build pdf
-        working-directory: p${{ matrix.problem }}
-        run: |
-          echo "Building ${{ matrix.problem }}"
-
-      - name: Merge cover into pA
-        if: matrix.problem == 'A'
-        run: |
-          pdfunite cover.pdf pA/statement/index.pdf pA/statement/index-with-cover.pdf
-          rm pA/statement/index.pdf
-          mv pA/statement/index-with-cover.pdf pA/statement/index.pdf
-
-      - name: Upload pdfs
-        uses: actions/upload-artifact@v2
-        with:
-          name: pdfs
-          path: ./*/statement/index.pdf
-
-  build-pdf-post:
-    if: always()
-    needs: build-pdf
-    runs-on: ubuntu-18.04
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Download pdfs
-        uses: actions/download-artifact@v2
-        with:
-          name: pdfs
-          path: ./
-
-      - name: Check diffs
-        run: |
-          git diff --name-only
 
   build-tests:
     if: always() && needs.check-post.outputs.build-tests != '[]'
@@ -420,23 +281,3 @@ jobs:
         working-directory: p${{ matrix.problem }}
         run: |
           echo "Run solutions for ${{ matrix.problem }}"
-
-  # verify:
-  #   runs-on: ubuntu-18.04
-
-  #   strategy:
-  #     matrix:
-  #       problem: [A, B, C]
-
-  #   steps:
-  #     - uses: actions/checkout@v2
-
-  #     - name: Install tps
-  #       run: |
-  #         git clone --depth 1 https://github.com/ioi-2017/tps.git
-  #         cd tps && sudo ./install-tps.sh
-
-  #     - name: Verify ${{ matrix.problem }}
-  #       working-directory: ${{ matrix.problem }}
-  #       run: |
-  #         tps verify
