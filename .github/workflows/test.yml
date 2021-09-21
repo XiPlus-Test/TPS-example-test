@@ -290,20 +290,68 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # - name: Install tps
-      #   run: |
-      #     git clone --depth 1 https://github.com/ioi-2017/tps.git
-      #     cd tps && sudo ./install-tps.sh
+      - name: Install tps
+        run: |
+          git clone https://github.com/ioi-2017/tps.git
+          cd tps && sudo ./install-tps.sh
+
+      - name: Install pandoc
+        run: |
+          wget https://github.com/jgm/pandoc/releases/download/2.10.1/pandoc-2.10.1-1-amd64.deb
+          sudo dpkg -i pandoc-2.10.1-1-amd64.deb
+
+      - name: Install xetex
+        run: |
+          sudo add-apt-repository ppa:jonathonf/texlive-2019
+          sudo apt-get update
+          sudo apt-get install texlive-xetex
+
+      - name: Install pdfunite
+        run: |
+          sudo apt-get install poppler-utils
+
+      - name: Install fonts
+        run: |
+          sudo mkdir -p /usr/share/fonts/opentype/noto
+          wget -nv https://noto-website-2.storage.googleapis.com/pkgs/NotoSansCJK-Regular.ttc.zip
+          unzip NotoSansCJK-Regular.ttc.zip -d NotoSansCJK-Regular
+          ls -al NotoSansCJK-Regular
+          sudo cp NotoSansCJK-Regular/NotoSansCJK-Regular.ttc /usr/share/fonts/opentype/noto
+          wget -nv https://noto-website-2.storage.googleapis.com/pkgs/NotoSansCJK-Bold.ttc.zip
+          unzip NotoSansCJK-Bold.ttc.zip -d NotoSansCJK-Bold
+          ls -al NotoSansCJK-Bold
+          sudo cp NotoSansCJK-Bold/NotoSansCJK-Bold.ttc /usr/share/fonts/opentype/noto
+          ls -al /usr/share/fonts/opentype/noto
+          sudo fc-cache -f -v
+
       - name: env
         env:
           NEEDS: ${{ toJson(needs) }}
         run: |
           echo "$NEEDS"
 
+      - name: Build cover
+        if: matrix.problem == 'A'
+        run: |
+          xelatex cover.tex
+
       - name: Build pdf
-        working-directory: ${{ matrix.problem }}
+        working-directory: p${{ matrix.problem }}
         run: |
           echo "Building ${{ matrix.problem }}"
+
+      - name: Merge cover into pA
+        if: matrix.problem == 'A'
+        run: |
+          pdfunite cover.pdf pA/statement/index.pdf pA/statement/index-with-cover.pdf
+          rm pA/statement/index.pdf
+          mv pA/statement/index-with-cover.pdf pA/statement/index.pdf
+
+      - name: Upload pdfs
+        uses: actions/upload-artifact@v2
+        with:
+          name: pdfs
+          path: ./*/statement/index.pdf
 
   build-tests:
     if: always() && needs.check-post.outputs.build-tests != '[]'
