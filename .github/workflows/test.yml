@@ -342,7 +342,7 @@ jobs:
           set +e
 
           git diff HEAD --quiet p${{ matrix.problem }}/tests/
-          if [ $? -eq 0 ]; then
+          if [ $? -ne 0 ]; then
             echo "::set-output name=changed::true"
             echo "Tests changed"
           else
