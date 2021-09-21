@@ -169,20 +169,20 @@ jobs:
       - name: Set input flag
         if: contains(github.event.inputs.input, matrix.problem)
         run: |
-          echo true > /home/runner/flags/build-tests/p${{ matrix.problem }}
-          echo true > /home/runner/flags/build-input/p${{ matrix.problem }}
+          echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
+          echo true > /home/runner/flags/build-input/${{ matrix.problem }}
 
       - name: Set output flag
         if: contains(github.event.inputs.output, matrix.problem)
         run: |
-          echo true > /home/runner/flags/build-tests/p${{ matrix.problem }}
-          echo true > /home/runner/flags/build-output/p${{ matrix.problem }}
+          echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
+          echo true > /home/runner/flags/build-output/${{ matrix.problem }}
 
       - name: Set solutions flag
         if: contains(github.event.inputs.solutions, matrix.problem)
         run: |
-          echo true > /home/runner/flags/build-tests/p${{ matrix.problem }}
-          echo true > /home/runner/flags/run-solutions/p${{ matrix.problem }}
+          echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
+          echo true > /home/runner/flags/run-solutions/${{ matrix.problem }}
 
       - name: Upload flags
         uses: actions/upload-artifact@v2
