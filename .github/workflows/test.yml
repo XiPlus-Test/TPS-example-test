@@ -267,7 +267,7 @@ jobs:
         id: build-output
         working-directory: /home/runner/flags/build-output/
         run: |
-          probs=$(python3 -c 'import glob; print(json.dumps(glob.glob("*")))')
+          probs=$(python3 -c 'import glob; print("".join(glob.glob("*")))')
           echo $probs
           echo "::set-output name=build-output::$probs"
 
@@ -275,7 +275,7 @@ jobs:
         id: run-solutions
         working-directory: /home/runner/flags/run-solutions/
         run: |
-          probs=$(python3 -c 'import glob; print(json.dumps(glob.glob("*")))')
+          probs=$(python3 -c 'import glob; print("".join(glob.glob("*")))')
           echo $probs
           echo "::set-output name=run-solutions::$probs"
 
