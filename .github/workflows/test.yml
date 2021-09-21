@@ -54,10 +54,10 @@ jobs:
 
       - name: Make flags dir
         run: |
-          mkdir -p ../flags/build-pdf/
-          touch ../flags/build-pdf/.keep
-          mkdir -p ../flags/build-tests/
-          touch ../flags/build-tests/.keep
+          mkdir -p /home/runner/flags/build-pdf/
+          touch /home/runner/flags/build-pdf/.keep
+          mkdir -p /home/runner/flags/build-tests/
+          touch /home/runner/flags/build-tests/.keep
 
       - name: Set env
         id: env
@@ -94,18 +94,18 @@ jobs:
       - name: Set problem flag
         if: steps.changes.outputs.pdf == 'true' || (matrix.problem == 'pA' && steps.changes.outputs.cover == 'true')
         run: |
-          echo true > ../flags/build-pdf/${{ matrix.problem }}
+          echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
 
       - name: Set tests flag
         if: steps.changes.outputs.input == 'true'
         run: |
-          echo true > ../flags/build-tests/${{ matrix.problem }}
+          echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
 
       - name: Upload flags
         uses: actions/upload-artifact@v2
         with:
           name: flags
-          path: ../flags/
+          path: /home/runner/flags/
 
   check-post:
     needs: check
@@ -119,11 +119,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: flags
-          path: ../flags/
+          path: /home/runner/flags/
 
       - name: build-pdf
         id: build-pdf
-        working-directory: ../flags/build-pdf/
+        working-directory: /home/runner/flags/build-pdf/
         run: |
           probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
           echo $probs
@@ -137,7 +137,7 @@ jobs:
 
       - name: build-tests
         id: build-tests
-        working-directory: ../flags/build-tests/
+        working-directory: /home/runner/flags/build-tests/
         run: |
           probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
           echo $probs
