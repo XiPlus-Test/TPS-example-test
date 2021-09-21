@@ -113,54 +113,54 @@ jobs:
           name: flags
           path: /home/runner/flags/
 
-      # - name: Install tps
-      #   run: |
-      #     git clone https://github.com/ioi-2017/tps.git
-      #     cd tps && sudo ./install-tps.sh
+      - name: Install tps
+        run: |
+          git clone https://github.com/ioi-2017/tps.git
+          cd tps && sudo ./install-tps.sh
 
-      # - name: Install pandoc
-      #   run: |
-      #     wget https://github.com/jgm/pandoc/releases/download/2.10.1/pandoc-2.10.1-1-amd64.deb
-      #     sudo dpkg -i pandoc-2.10.1-1-amd64.deb
+      - name: Install pandoc
+        run: |
+          wget https://github.com/jgm/pandoc/releases/download/2.10.1/pandoc-2.10.1-1-amd64.deb
+          sudo dpkg -i pandoc-2.10.1-1-amd64.deb
 
-      # - name: Install xetex
-      #   run: |
-      #     sudo add-apt-repository ppa:jonathonf/texlive-2019
-      #     sudo apt-get update
-      #     sudo apt-get install texlive-xetex
+      - name: Install xetex
+        run: |
+          sudo add-apt-repository ppa:jonathonf/texlive-2019
+          sudo apt-get update
+          sudo apt-get install texlive-xetex
 
-      # - name: Install fonts
-      #   run: |
-      #     sudo mkdir -p /usr/share/fonts/opentype/noto
-      #     wget -nv https://noto-website-2.storage.googleapis.com/pkgs/NotoSansCJK-Regular.ttc.zip
-      #     unzip NotoSansCJK-Regular.ttc.zip -d NotoSansCJK-Regular
-      #     ls -al NotoSansCJK-Regular
-      #     sudo cp NotoSansCJK-Regular/NotoSansCJK-Regular.ttc /usr/share/fonts/opentype/noto
-      #     wget -nv https://noto-website-2.storage.googleapis.com/pkgs/NotoSansCJK-Bold.ttc.zip
-      #     unzip NotoSansCJK-Bold.ttc.zip -d NotoSansCJK-Bold
-      #     ls -al NotoSansCJK-Bold
-      #     sudo cp NotoSansCJK-Bold/NotoSansCJK-Bold.ttc /usr/share/fonts/opentype/noto
-      #     ls -al /usr/share/fonts/opentype/noto
-      #     sudo fc-cache -f -v
+      - name: Install fonts
+        run: |
+          sudo mkdir -p /usr/share/fonts/opentype/noto
+          wget -nv https://noto-website-2.storage.googleapis.com/pkgs/NotoSansCJK-Regular.ttc.zip
+          unzip NotoSansCJK-Regular.ttc.zip -d NotoSansCJK-Regular
+          ls -al NotoSansCJK-Regular
+          sudo cp NotoSansCJK-Regular/NotoSansCJK-Regular.ttc /usr/share/fonts/opentype/noto
+          wget -nv https://noto-website-2.storage.googleapis.com/pkgs/NotoSansCJK-Bold.ttc.zip
+          unzip NotoSansCJK-Bold.ttc.zip -d NotoSansCJK-Bold
+          ls -al NotoSansCJK-Bold
+          sudo cp NotoSansCJK-Bold/NotoSansCJK-Bold.ttc /usr/share/fonts/opentype/noto
+          ls -al /usr/share/fonts/opentype/noto
+          sudo fc-cache -f -v
 
-      # - name: Install pdfunite
-      #   run: |
-      #     sudo apt-get install poppler-utils
+      - name: Install pdfunite
+        run: |
+          sudo apt-get install poppler-utils
 
-      # - name: Check environment
-      #   working-directory: pA
-      #   run: |
-      #     lsb_release -a
-      #     echo ""
-      #     pandoc -v
-      #     echo ""
-      #     xetex -v
-      #     echo ""
-      #     tps || :;
-      #     echo ""
-      #     fc-list | grep "Noto Sans Mono CJK TC" || :;
-      #     echo ""
-      #     pdfunite -v
+      - name: Check environment
+        working-directory: pA
+        run: |
+          lsb_release -a
+          echo ""
+          pandoc -v
+          echo ""
+          xetex -v
+          echo ""
+          tps || :;
+          echo ""
+          fc-list | grep "Noto Sans Mono CJK TC" || :;
+          echo ""
+          pdfunite -v
 
       - name: Check target
         id: target
@@ -173,25 +173,38 @@ jobs:
           echo $probs
           echo "::set-output name=problems::$probs"
 
-      - name: Build pdfs
+      - name: Build cover
+        if: contains(steps.target.outputs.problems, 'A')
+        run: |
+          xelatex cover.tex
+
+      - name: Build pdf
         run: |
           echo ${{ steps.target.outputs.problems }}
           for prob in $(cat /home/runner/flags/*); do
-            echo "build-${prob}-pdf";
+            cd p${prob} && tps statement
           done
 
-      # - name: Commit pdf
-      #   run: |
-      #     git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      #     git config --local user.name "github-actions[bot]"
-      #     git status
-      #     git add pA/statement/index.pdf
-      #     git add pB/statement/index.pdf
-      #     git add pC/statement/index.pdf
-      #     git add pD/statement/index.pdf
-      #     git add pE/statement/index.pdf
-      #     git add pF/statement/index.pdf
-      #     git add pA/attachments/problems.pdf
-      #     git pull
-      #     git diff-index --quiet HEAD -- || git commit -m "Build pdf"
-      #     git push
+      - name: Merge cover into pA
+        if: contains(steps.target.outputs.problems, 'A')
+        run: |
+          pdfunite cover.pdf pA/statement/index.pdf pA/statement/index-with-cover.pdf
+          rm pA/statement/index.pdf
+          mv pA/statement/index-with-cover.pdf pA/statement/index.pdf
+
+      - name: Check diff
+        run: |
+          git diff --name-only
+
+      - name: Commit pdf
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git status
+          for prob in $(cat /home/runner/flags/*); do
+            git add p${prob}/statement/index.pdf
+          done
+          git add pA/attachments/problems.pdf
+          git pull
+          git diff-index --quiet HEAD -- || git commit -m "Build pdf"
+          git push
