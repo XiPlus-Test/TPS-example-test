@@ -107,11 +107,13 @@ jobs:
       - name: Set output flag
         if: steps.changes.outputs.output == 'true'
         run: |
+          echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
           echo true > /home/runner/flags/build-output/${{ matrix.problem }}
 
       - name: Set solutions flag
         if: steps.changes.outputs.solutions == 'true'
         run: |
+          echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
           echo true > /home/runner/flags/run-solutions/${{ matrix.problem }}
 
       - name: Check changes in config
