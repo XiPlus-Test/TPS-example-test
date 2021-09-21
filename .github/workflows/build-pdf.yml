@@ -1,18 +1,107 @@
 name: Build pdf
 
 on:
-  # push:
-  #   paths:
-  #     - 'Arithmetic/scripts/statement.sh'
-  #     - 'Arithmetic/statement/*.jpg'
-  #     - 'Arithmetic/statement/index.md'
-  #     - 'Arithmetic/problem.json'
-  #     - 'Arithmetic/subtasks.json'
-  #     - 'template.tex'
+  push:
+    paths:
+      - '*/scripts/statement.sh'
+      - '*/statement/*.jpg'
+      - '*/statement/index.md'
+      - '*/problem.json'
+      - 'template.tex'
+      - 'cover.tex'
   workflow_dispatch:
+    inputs:
+      target:
+        description: 'Problem labels to build'
+        default: 'ABC'
 
 jobs:
-  build:
+  check-push:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        problem: [A, B, C]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Make flags dir
+        run: |
+          mkdir -p /home/runner/flags/build-pdf/
+          touch /home/runner/flags/build-pdf/.keep
+
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          list-files: 'json'
+          filters: |
+            pdf:
+              - p${{ matrix.problem }}/scripts/statement.sh
+              - p${{ matrix.problem }}/statement/*.jpg
+              - p${{ matrix.problem }}/statement/index.md
+              - template.tex
+            cover:
+              - cover.tex
+
+      - name: Set problem flag
+        if: steps.changes.outputs.pdf == 'true' || (matrix.problem == 'A' && steps.changes.outputs.cover == 'true')
+        run: |
+          echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
+
+      - name: Check changes in config
+        run: |
+          set +e
+
+          git diff ${{ github.event.before }}..HEAD -U0 p${{ matrix.problem }}/problem.json | grep '"contest_name"\|"problem_label"\|"name"\|"title"\|"memory_limit"\|"time_limit"'
+          if [ $? -eq 0 ]; then
+            echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
+          else
+            echo "No changes in problem.json for pdf";
+          fi
+
+          git diff ${{ github.event.before }}..HEAD -U0 p${{ matrix.problem }}/subtasks.json | grep '"index"\|"score"\|"text"'
+          if [ $? -eq 0 ]; then
+            echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
+          else
+            echo "No changes in subtasks.json for pdf";
+          fi
+
+      - name: Upload flags
+        uses: actions/upload-artifact@v2
+        with:
+          name: flags
+          path: /home/runner/flags/
+
+  check-manually:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        problem: [A, B, C]
+
+    steps:
+      - name: Make flags dir
+        run: |
+          mkdir -p /home/runner/flags/build-pdf/
+          touch /home/runner/flags/build-pdf/.keep
+
+      - name: Set problem flag
+        if: contains(github.event.inputs.target, matrix.problem)
+        run: |
+          echo true > /home/runner/flags/build-pdf/p${{ matrix.problem }}
+
+      - name: Upload flags
+        uses: actions/upload-artifact@v2
+        with:
+          name: flags
+          path: /home/runner/flags/
+
+  build-pdf:
+    needs: [check-push, check-manually]
+    if: always()
     runs-on: ubuntu-18.04
 
     steps:
@@ -53,7 +142,7 @@ jobs:
           sudo apt-get install poppler-utils
 
       - name: Check environment
-        working-directory: Arithmetic
+        working-directory: pA
         run: |
           lsb_release -a
           echo ""
@@ -67,36 +156,30 @@ jobs:
           echo ""
           pdfunite -v
 
-      - uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            template:
-              - 'template.tex'
-            Arithmetic:
-              - 'Arithmetic/scripts/statement.sh'
-              - 'Arithmetic/statement/*.jpg'
-              - 'Arithmetic/statement/index.md'
-              - 'Arithmetic/problem.json'
-              - 'Arithmetic/subtasks.json'
-
-      - name: Build Arithmetic
-        if: steps.changes.outputs.Arithmetic == 'true' || steps.changes.outputs.template == 'true'
-        working-directory: Arithmetic
+      - name: Check target
+        id: target
+        working-directory: /home/runner/flags/build-pdf/
         run: |
-          tps statement
+          probs=$(ls -m)
+          echo $probs
+          echo "::set-output name=problems::$probs"
 
-      - name: Merge pdfs
-        if: steps.changes.outputs.Arithmetic == 'true' || steps.changes.outputs.template == 'true'
+      - name: Build pdfs
         run: |
-          mkdir -p Arithmetic/attachments
-          pdfunite Arithmetic/statement/index.pdf Arithmetic/attachments/problems.pdf
+          echo ${{ steps.target.outputs.problems }}
 
-      - name: Commit pdf and push
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git status
-          git add Arithmetic/statement/index.pdf
-          git add Arithmetic/attachments/problems.pdf
-          git diff --cached --name-only && git commit -m "Build statement" && git push || :;
+      # - name: Commit pdf
+      #   run: |
+      #     git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      #     git config --local user.name "github-actions[bot]"
+      #     git status
+      #     git add pA/statement/index.pdf
+      #     git add pB/statement/index.pdf
+      #     git add pC/statement/index.pdf
+      #     git add pD/statement/index.pdf
+      #     git add pE/statement/index.pdf
+      #     git add pF/statement/index.pdf
+      #     git add pA/attachments/problems.pdf
+      #     git pull
+      #     git diff-index --quiet HEAD -- || git commit -m "Build pdf"
+      #     git push
