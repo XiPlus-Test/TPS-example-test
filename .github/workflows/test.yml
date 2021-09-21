@@ -55,6 +55,13 @@ jobs:
       - name: Make flags dir
         run: |
           mkdir -p ~/flags/build-pdf/
+          mkdir -p ~/flags/build-tests/
+
+      - name: Set env
+        working-directory: ${{ matrix.problem }}
+        run: |
+          export model_solution=$(SOLUTIONS_JSON=./solutions.json python3 scripts/internal/get_model_solution.py)
+          echo $model_solution
 
       - uses: dorny/paths-filter@v2
         id: changes
@@ -68,6 +75,9 @@ jobs:
               - template.tex
             cover:
               - cover.tex
+            input:
+              - ${{ matrix.problem }}/gen/**
+              - ${{ matrix.problem }}/solutions/$model_solution
 
       - name: Show changed files
         env:
@@ -80,6 +90,11 @@ jobs:
         run: |
           echo true > ~/flags/build-pdf/${{ matrix.problem }}
 
+      - name: Set tests flag
+        if: steps.changes.outputs.input == 'true'
+        run: |
+          echo true > ~/flags/build-tests/${{ matrix.problem }}
+
       - name: Upload flags
         uses: actions/upload-artifact@v2
         with:
@@ -91,6 +106,7 @@ jobs:
     runs-on: ubuntu-18.04
     outputs:
       build-pdf: ${{ steps.build-pdf.outputs.build-pdf }}
+      build-tests: ${{ steps.build-tests.outputs.build-tests }}
 
     steps:
       - name: Download flags
@@ -106,11 +122,24 @@ jobs:
           echo $probs
           echo "::set-output name=build-pdf::$probs"
 
-      - name: Show outputs
+      - name: build-pdf outputs
         env:
-          BUILDPDF: ${{ toJson(steps.build-pdf.outputs) }}
+          OUTPUTS: ${{ toJson(steps.build-pdf.outputs) }}
         run: |
-          echo "$BUILDPDF"
+          echo "$OUTPUTS"
+
+      - name: build-tests
+        id: build-tests
+        run: |
+          probs=$(python3 -c 'import os, json; print(json.dumps(os.listdir(os.path.expanduser("~/flags/build-tests/"))))')
+          echo $probs
+          echo "::set-output name=build-tests::$probs"
+
+      - name: build-tests outputs
+        env:
+          OUTPUTS: ${{ toJson(steps.build-tests.outputs) }}
+        run: |
+          echo "$OUTPUTS"
 
   build-pdf:
     name: build-pdf-${{ matrix.problem }}
@@ -134,7 +163,28 @@ jobs:
           echo "$NEEDS"
 
       - name: Build pdf
-        if: ${{ format('needs.check-{0}.outputs.build-pdf', matrix.problem) }} != ${{ matrix.problem }}
+        working-directory: ${{ matrix.problem }}
+        run: |
+          echo "Building ${{ matrix.problem }}"
+
+  build-tests:
+    name: build-tests-${{ matrix.problem }}
+    needs: check-post
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        problem: ${{ fromJson(needs.check-post.outputs.build-tests) }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: env
+        env:
+          NEEDS: ${{ toJson(needs) }}
+        run: |
+          echo "$NEEDS"
+
+      - name: Build pdf
         working-directory: ${{ matrix.problem }}
         run: |
           echo "Building ${{ matrix.problem }}"
