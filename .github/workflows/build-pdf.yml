@@ -30,8 +30,8 @@ jobs:
 
       - name: Make flags dir
         run: |
-          mkdir -p /home/runner/flags/build-pdf/
-          touch /home/runner/flags/build-pdf/.keep
+          mkdir -p /home/runner/flags/
+          touch /home/runner/flags/.keep
 
       - uses: dorny/paths-filter@v2
         id: changes
@@ -49,7 +49,7 @@ jobs:
       - name: Set problem flag
         if: steps.changes.outputs.pdf == 'true' || (matrix.problem == 'A' && steps.changes.outputs.cover == 'true')
         run: |
-          echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
+          echo true > /home/runner/flags/${{ matrix.problem }}
 
       - name: Check changes in config
         run: |
@@ -57,14 +57,14 @@ jobs:
 
           git diff ${{ github.event.before }}..HEAD -U0 p${{ matrix.problem }}/problem.json | grep '"contest_name"\|"problem_label"\|"name"\|"title"\|"memory_limit"\|"time_limit"'
           if [ $? -eq 0 ]; then
-            echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
+            echo true > /home/runner/flags/${{ matrix.problem }}
           else
             echo "No changes in problem.json for pdf";
           fi
 
           git diff ${{ github.event.before }}..HEAD -U0 p${{ matrix.problem }}/subtasks.json | grep '"index"\|"score"\|"text"'
           if [ $? -eq 0 ]; then
-            echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
+            echo true > /home/runner/flags/${{ matrix.problem }}
           else
             echo "No changes in subtasks.json for pdf";
           fi
