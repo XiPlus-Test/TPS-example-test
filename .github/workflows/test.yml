@@ -5,10 +5,10 @@ on:
   workflow_dispatch:
     inputs:
       input:
-        description: 'Problem labels to build input'
+        description: 'Problem labels to build inputs'
         default: ''
       output:
-        description: 'Problem labels to build output'
+        description: 'Problem labels to build outputs'
         default: ''
       solutions:
         description: 'Problem labels to run solutions'
