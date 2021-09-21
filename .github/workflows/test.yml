@@ -263,7 +263,7 @@ jobs:
           echo "$NEEDS"
           echo "$ENVS"
 
-      - name: Build input
+      - name: Build input and output
         if: contains(needs.check-post.outputs.build-input, matrix.problem)
         working-directory: p${{ matrix.problem }}
         run: |
@@ -295,6 +295,7 @@ jobs:
         working-directory: p${{ matrix.problem }}
         run: |
           echo "Run solutions for ${{ matrix.problem }}"
+          rm -f solutions-check.txt
           tps solutions | tee -a solutions-check.txt
 
       - name: Commit tests
