@@ -1,7 +1,7 @@
 name: Test
 
 on:
-  push:
+  # push:
   workflow_dispatch:
     inputs:
       pdf:
@@ -369,8 +369,6 @@ jobs:
 
       - name: Check diffs
         run: |
-          ls
-          tree
           git diff --name-only
 
   build-tests:

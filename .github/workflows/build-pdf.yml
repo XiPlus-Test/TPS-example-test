@@ -85,13 +85,13 @@ jobs:
     steps:
       - name: Make flags dir
         run: |
-          mkdir -p /home/runner/flags/build-pdf/
-          touch /home/runner/flags/build-pdf/.keep
+          mkdir -p /home/runner/flags/
+          touch /home/runner/flags/.keep
 
       - name: Set problem flag
         if: contains(github.event.inputs.target, matrix.problem)
         run: |
-          echo true > /home/runner/flags/build-pdf/p${{ matrix.problem }}
+          echo true > /home/runner/flags/${{ matrix.problem }}
 
       - name: Upload flags
         uses: actions/upload-artifact@v2
@@ -158,9 +158,9 @@ jobs:
 
       - name: Check target
         id: target
-        working-directory: /home/runner/flags/build-pdf/
+        working-directory: /home/runner/flags/
         run: |
-          probs=$(ls -m)
+          probs=$(ls -m .)
           echo $probs
           echo "::set-output name=problems::$probs"
 
