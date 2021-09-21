@@ -258,7 +258,7 @@ jobs:
           echo "Building input for ${{ matrix.problem }}"
 
       - name: Build output
-        if: ${{ !contains(needs.check-post.outputs.build-input, matrix.problem) }} && ${{ contains(needs.check-post.outputs.build-output, matrix.problem) }}
+        if: ${{ !contains(needs.check-post.outputs.build-input, matrix.problem) && contains(needs.check-post.outputs.build-output, matrix.problem) }}
         working-directory: p${{ matrix.problem }}
         run: |
           echo "Building output for ${{ matrix.problem }}"
