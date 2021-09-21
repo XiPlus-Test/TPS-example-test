@@ -1,6 +1,6 @@
 # test_name gen_line_number gen_line_content
 0-01	  2	manual sample-01.in
-1-01	  5	gen task2 qutxm 1
+1-01	  5	gen task2 qutxm
 1-02	  6	gen task2 iqsds
 1-03	  7	gen task2 qsvsu
 1-04	  8	gen task2 entmw
