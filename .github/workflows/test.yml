@@ -113,7 +113,28 @@ jobs:
         run: |
           echo "$FILES"
 
-      - name: Check changed lines
+      - name: Set problem flag
+        if: steps.changes.outputs.pdf == 'true' || (matrix.problem == 'pA' && steps.changes.outputs.cover == 'true')
+        run: |
+          echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
+
+      - name: Set input flag
+        if: steps.changes.outputs.input == 'true'
+        run: |
+          echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
+          echo true > /home/runner/flags/build-input/${{ matrix.problem }}
+
+      - name: Set output flag
+        if: steps.changes.outputs.output == 'true'
+        run: |
+          echo true > /home/runner/flags/build-output/${{ matrix.problem }}
+
+      - name: Set solutions flag
+        if: steps.changes.outputs.solutions == 'true'
+        run: |
+          echo true > /home/runner/flags/run-solutions/${{ matrix.problem }}
+
+      - name: Check changes in config
         run: |
           set +e
 
@@ -121,7 +142,7 @@ jobs:
           if [ $? -eq 0 ]; then
             echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
           else
-            echo "No change to pdf";
+            echo "No change in problem.json for pdf";
           fi
 
           git diff ${{ github.event.before }}..HEAD -U0 ${{ matrix.problem }}/problem.json | grep '"time_limit"'
@@ -129,18 +150,23 @@ jobs:
             echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
             echo true > /home/runner/flags/run-solutions/${{ matrix.problem }}
           else
-            echo "No change to time_limit";
+            echo "No change in problem.json for solutions";
           fi
 
-      - name: Set problem flag
-        if: steps.changes.outputs.pdf == 'true' || (matrix.problem == 'pA' && steps.changes.outputs.cover == 'true')
-        run: |
-          echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
+          git diff ${{ github.event.before }}..HEAD -U0 ${{ matrix.problem }}/solutions.json | grep '"model_solution"'
+          if [ $? -eq 0 ]; then
+            echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
+            echo true > /home/runner/flags/build-input/${{ matrix.problem }}
+          else
+            echo "No change in solutions.json for input";
+          fi
 
-      - name: Set tests flag
-        if: steps.changes.outputs.input == 'true'
-        run: |
-          echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
+          git diff ${{ github.event.before }}..HEAD -U0 ${{ matrix.problem }}/subtasks.json | grep '"index"\|"score"\|"text"'
+          if [ $? -eq 0 ]; then
+            echo true > /home/runner/flags/build-pdf/${{ matrix.problem }}
+          else
+            echo "No change in subtasks.json for pdf";
+          fi
 
       - name: Upload flags
         uses: actions/upload-artifact@v2
