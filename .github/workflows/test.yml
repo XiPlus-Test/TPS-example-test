@@ -273,7 +273,7 @@ jobs:
           echo "$NEEDS"
           echo "$ENVS"
 
-      - name: Build input and output
+      - name: Build inputs and outputs
         if: contains(needs.check-post.outputs.build-input, matrix.problem)
         working-directory: p${{ matrix.problem }}
         run: |
@@ -285,7 +285,8 @@ jobs:
           git add tests/*.out
           git add tests/gen_summary
           git add tests/mapping
-          git diff --cached --quiet || git commit -m "p${{ matrix.problem }} Build input and output"
+          git pull
+          git diff --cached --quiet || git commit -m "p${{ matrix.problem }} Build inputs and outputs"
 
       - name: Build outputs
         if: ${{ !contains(needs.check-post.outputs.build-input, matrix.problem) && contains(needs.check-post.outputs.build-output, matrix.problem) }}
@@ -295,7 +296,8 @@ jobs:
           tps gen -s --no-gen
           git status
           git add tests/*.out
-          git diff --cached --quiet || git commit -m "p${{ matrix.problem }} Build output"
+          git pull
+          git diff --cached --quiet || git commit -m "p${{ matrix.problem }} Build outputs"
 
       - name: Check tests changes
         id: tests-changes
@@ -319,6 +321,7 @@ jobs:
           tps solutions | tee -a solutions-check.txt
           git status
           git add solutions-check.txt
+          git pull
           git diff --cached --quiet || git commit -m "p${{ matrix.problem }} Run solutions"
 
       - name: Push
