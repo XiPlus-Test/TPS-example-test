@@ -245,6 +245,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get install dos2unix python3-setuptools
+          sudo python3 -m pip install psutil
+
+      - name: Install tps
+        run: |
+          git clone https://github.com/ioi-2017/tps.git
+          cd tps && sudo ./install-tps.sh
+
       - name: env
         env:
           NEEDS: ${{ toJson(needs) }}
@@ -258,12 +268,14 @@ jobs:
         working-directory: p${{ matrix.problem }}
         run: |
           echo "Building input for ${{ matrix.problem }}"
+          tps gen -s
 
       - name: Build output
         if: ${{ !contains(needs.check-post.outputs.build-input, matrix.problem) && contains(needs.check-post.outputs.build-output, matrix.problem) }}
         working-directory: p${{ matrix.problem }}
         run: |
           echo "Building output for ${{ matrix.problem }}"
+          tps gen -s --no-gen
 
       - name: Check tests changes
         id: tests-changes
@@ -283,3 +295,20 @@ jobs:
         working-directory: p${{ matrix.problem }}
         run: |
           echo "Run solutions for ${{ matrix.problem }}"
+          tps solutions | tee -a solutions-check.txt
+
+      - name: Commit tests
+        working-directory: p${{ matrix.problem }}
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git status
+          git add gen/data
+          git add tests/*.in
+          git add tests/*.out
+          git add tests/gen_summary
+          git add tests/mapping
+          git add solutions-check.txt
+          git pull
+          git diff --cached --quiet || git commit -m "Build tests"
+          git push
