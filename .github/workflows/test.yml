@@ -123,7 +123,7 @@ jobs:
 
       - name: build-pdf
         id: build-pdf
-        working-directory: ~/flags/build-pdf/
+        working-directory: /home/runner/flags/build-pdf/
         run: |
           probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
           echo $probs
@@ -137,7 +137,7 @@ jobs:
 
       - name: build-tests
         id: build-tests
-        working-directory: ~/flags/build-tests/
+        working-directory: /home/runner/flags/build-tests/
         run: |
           probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
           echo $probs
