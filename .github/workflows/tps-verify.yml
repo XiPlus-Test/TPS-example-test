@@ -46,12 +46,7 @@ jobs:
 
           tps verify | tee verify-result.txt
 
-          grep "WARNING:" verify-result.txt >/dev/null
-          if [ $? -eq 0 ]; then
-            echo "::warning ::WARNING found"
-          fi
-
           grep "ERROR:" verify-result.txt >/dev/null
           if [ $? -eq 0 ]; then
-            echo "::error ::ERROR found"
+            exit 1
           fi
