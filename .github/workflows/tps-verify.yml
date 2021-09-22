@@ -16,6 +16,7 @@ jobs:
     strategy:
       matrix:
         problem: [A, B, C]
+      fail-fast: false
 
     steps:
       - uses: actions/checkout@v2
