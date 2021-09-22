@@ -110,7 +110,7 @@ jobs:
           git diff ${{ github.event.before }}..HEAD -U0 p${{ matrix.problem }}/subtasks.json | grep '"score"'
           if [ $? -eq 0 ]; then
             echo true > /home/runner/flags/build-tests/${{ matrix.problem }}
-            echo true > /home/runner/flags/build-input/${{ matrix.problem }}
+            echo true > /home/runner/flags/run-solutions/${{ matrix.problem }}
           else
             echo "No changes in subtasks.json for solutions";
           fi
