@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        problem: [A, B, C, D, E, F]
+        problem: [A, B, C]
 
     steps:
       - uses: actions/checkout@v2
