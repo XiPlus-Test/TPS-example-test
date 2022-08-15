@@ -52,7 +52,4 @@ jobs:
           git commit -m "Create problem ${{ inputs.folder }}"
 
       - name: Push changes
-        uses: ad-m/github-push-action@v0.5.0
-        with:
-          github_token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
-          branch: main
+        uses: ad-m/github-push-action@v0.6.0
