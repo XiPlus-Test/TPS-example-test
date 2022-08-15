@@ -36,7 +36,7 @@ jobs:
 
       - name: New problem
         run: |
-          tps init ${{ inputs.folder }} -T tps-task-templates/default
+          tps init ${{ inputs.folder }} -T tps-task-templates
 
       - name: Check envs
         run: |
