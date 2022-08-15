@@ -15,6 +15,27 @@ on:
       target:
         description: 'Problem labels to build'
         default: 'ABC'
+      pA:
+        description: 'Run pA'
+        type: boolean
+      pB:
+        description: 'Run pB'
+        type: boolean
+      pC:
+        description: 'Run pC'
+        type: boolean
+      pD:
+        description: 'Run pD'
+        type: boolean
+      pE:
+        description: 'Run pE'
+        type: boolean
+      pF:
+        description: 'Run pF'
+        type: boolean
+      pG:
+        description: 'Run pG'
+        type: boolean
 
 jobs:
   check-push:
