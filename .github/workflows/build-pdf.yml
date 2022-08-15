@@ -15,27 +15,27 @@ on:
       target:
         description: 'Problem labels to build'
         default: 'ABC'
-      pA:
-        description: 'Run pA'
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
+      print_tags:
+        description: 'True to print to STDOUT'
+        required: true
         type: boolean
-      pB:
-        description: 'Run pB'
-        type: boolean
-      pC:
-        description: 'Run pC'
-        type: boolean
-      pD:
-        description: 'Run pD'
-        type: boolean
-      pE:
-        description: 'Run pE'
-        type: boolean
-      pF:
-        description: 'Run pF'
-        type: boolean
-      pG:
-        description: 'Run pG'
-        type: boolean
+      tags:
+        description: 'Test scenario tags'
+        required: true
+        type: string
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true
 
 jobs:
   check-push:
