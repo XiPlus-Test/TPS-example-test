@@ -3,7 +3,7 @@ name: New problem
 on:
   workflow_dispatch:
     inputs:
-      target:
+      folder:
         description: 'Folder name to create'
 
 jobs:
@@ -12,11 +12,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Check envs
-        run: |
-          pwd
-          ls
 
       - name: Install dependencies
         run: |
@@ -38,3 +33,26 @@ jobs:
           pwd
           ls
           git status
+
+      - name: New problem
+        run: |
+          tps init ${{ inputs.folder }} -T tps-task-templates/default
+
+      - name: Check envs
+        run: |
+          pwd
+          ls
+          git status
+
+      - name: Commit files
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add ${{ inputs.folder }}
+          git commit -m "Create problem ${{ inputs.folder }}"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.5.0
+        with:
+          github_token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
+          branch: main
