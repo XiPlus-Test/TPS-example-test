@@ -1,0 +1,38 @@
+name: New problem
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Folder name to create'
+
+jobs:
+  create:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check envs
+        run: |
+          pwd
+          ls
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install dos2unix python3-setuptools
+          sudo python3 -m pip install psutil
+
+      - name: Install tps
+        run: |
+          bash -c "$(curl -fsSL https://raw.githubusercontent.com/ioi-2017/tps/master/online-installer/install.sh)"
+
+      - name: Download templates
+        uses: actions/checkout@v3
+        with:
+          repository: 'TNFSH-Programming-Contest/tps-task-templates'
+
+      - name: Check envs
+        run: |
+          pwd
+          ls
