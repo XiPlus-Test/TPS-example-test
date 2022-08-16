@@ -17,7 +17,7 @@ jobs:
           text: ${{ inputs.label }}
           regex: '^[A-Z]$'
 
-      - uses: actions-ecosystem/action-add-labels@v1
+      - name: Check label
         if: ${{ steps.label-check.outputs.match == '' }}
         run: |
           echo "Problem label must be A-Z, single uppercase character"
