@@ -2,6 +2,8 @@ name: Build pdf
 
 on:
   push:
+    branches:
+      - '**'
     paths:
       - '*/scripts/statement.sh'
       - '*/statement/*.jpg'

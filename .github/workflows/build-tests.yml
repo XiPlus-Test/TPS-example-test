@@ -2,6 +2,8 @@ name: Build tests
 
 on:
   push:
+    branches:
+      - '**'
     paths:
       - '*/gen/**'
       - '*/solution/**'
