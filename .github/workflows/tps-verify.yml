@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        problem: [A, B, C] # NEWPROBLEM
+        problem: [A] # NEWPROBLEM
       fail-fast: false
 
     steps:
