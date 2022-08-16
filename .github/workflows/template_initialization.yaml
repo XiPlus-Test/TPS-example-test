@@ -4,8 +4,6 @@
 name: template_initialization
 on:
   push:
-    branches:
-      - main
 
 jobs:
   template_initialization:
