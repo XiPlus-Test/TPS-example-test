@@ -123,7 +123,6 @@ jobs:
 
   build-pdf:
     needs: [check-push, check-manually]
-    if: always()
     runs-on: ubuntu-18.04
 
     steps:

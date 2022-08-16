@@ -167,7 +167,6 @@ jobs:
 
   check-post:
     needs: [check-push, check-manually]
-    if: always()
     runs-on: ubuntu-18.04
     outputs:
       build-tests: ${{ steps.build-tests.outputs.build-tests }}
@@ -215,8 +214,8 @@ jobs:
           echo "::set-output name=run-solutions::$probs"
 
   build-tests:
-    if: always() && needs.check-post.outputs.build-tests != '[]'
     needs: check-post
+    if: needs.check-post.outputs.build-tests != '[]'
     runs-on: ubuntu-18.04
     strategy:
       matrix:
