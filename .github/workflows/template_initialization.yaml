@@ -42,6 +42,7 @@ jobs:
 
   debug:
     runs-on: ubuntu-latest
+    if: ${{ github.repository == 'Xi-Plus/TPS-example-test' }}
     steps:
       - name: Show envs
         run: env
