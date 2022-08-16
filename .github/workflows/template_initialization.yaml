@@ -4,6 +4,8 @@
 name: template_initialization
 on:
   push:
+    tags-ignore:
+      - '**'
 
 jobs:
   template_initialization:
