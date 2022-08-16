@@ -13,8 +13,8 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: 'Problem labels to build'
-        default: 'ABC'
+        description: 'Problem labels to build (A-Z), "+" to merge pdfs'
+        default: ''
       pA:
         description: 'Run pA'
         type: boolean
@@ -211,9 +211,11 @@ jobs:
           mv pA/statement/index-with-cover.pdf pA/statement/index.pdf
 
       - name: Merge pdfs
+        if: contains(steps.target.outputs.problems, '+')
         run: |
           mkdir -p pA/attachments
-          pdfunite pA/statement/index.pdf pB/statement/index.pdf pC/statement/index.pdf pA/attachments/problems.pdf
+          pdfunite pA/statement/index.pdf pB/statement/index.pdf pC/statement/index.pdf `#NEWPROBLEM` pA/attachments/problems.pdf
+          git add pA/attachments/problems.pdf
 
       - name: Check diff
         run: |
@@ -227,7 +229,6 @@ jobs:
           for prob in $(cat /home/runner/flags/*); do
             git add p${prob}/statement/index.pdf
           done
-          git add pA/attachments/problems.pdf
           git pull
-          git diff-index --quiet HEAD -- || git commit -m "Build pdf"
+          git diff-index --quiet HEAD -- || git commit -m "Build pdfs"
           git push

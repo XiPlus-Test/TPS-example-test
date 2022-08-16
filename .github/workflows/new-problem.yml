@@ -3,14 +3,26 @@ name: New problem
 on:
   workflow_dispatch:
     inputs:
-      folder:
-        description: 'Folder name to create'
+      label:
+        description: 'Problem label to create (A-Z, single uppercase character, without "p"-prefix)'
 
 jobs:
   create:
     runs-on: ubuntu-18.04
 
     steps:
+      - uses: actions-ecosystem/action-regex-match@v2
+        id: label-check
+        with:
+          text: ${{ inputs.label }}
+          regex: '^[A-Z]$'
+
+      - uses: actions-ecosystem/action-add-labels@v1
+        if: ${{ steps.label-check.outputs.match == '' }}
+        run: |
+          echo "Problem label must be A-Z, single uppercase character"
+          exit 1
+
       - uses: actions/checkout@v3
 
       - name: Dump GitHub context
@@ -41,7 +53,28 @@ jobs:
 
       - name: New problem
         run: |
-          tps init ${{ inputs.folder }} -T tps-task-templates
+          tps init p${{ inputs.label }} -T tps-task-templates
+
+      - name: Modify build-pdf.yml
+        uses: jacobtomlinson/gha-find-replace@2.0.0
+        with:
+          find: "`#NEWPROBLEM`"
+          replace: "p${{ inputs.label }}/statement/index.pdf `#NEWPROBLEM`"
+          include: ".github/workflows/build-pdf.yml"
+
+      - name: Modify build-tests.yml
+        uses: jacobtomlinson/gha-find-replace@2.0.0
+        with:
+          find: "] # NEWPROBLEM"
+          replace: ", ${{ inputs.label }} ] # NEWPROBLEM"
+          include: ".github/workflows/build-tests.yml"
+
+      - name: Modify tps-verify.yml
+        uses: jacobtomlinson/gha-find-replace@2.0.0
+        with:
+          find: "] # NEWPROBLEM"
+          replace: ", ${{ inputs.label }} ] # NEWPROBLEM"
+          include: ".github/workflows/tps-verify.yml"
 
       - name: Check envs
         run: |
@@ -53,8 +86,11 @@ jobs:
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add ${{ inputs.folder }}
-          echo "Create problem ${{ inputs.folder }}
+          git add p${{ inputs.label }}
+          git add .github/workflows/build-pdf.yml
+          git add .github/workflows/build-tests.yml
+          git add .github/workflows/tps-verify.yml
+          echo "Create problem p${{ inputs.label }}
 
           Co-Authored-By: ${{ github.event.sender.login }} <${{ github.event.sender.id }}+${{ github.event.sender.login }}@users.noreply.github.com>" | git commit --file -
 

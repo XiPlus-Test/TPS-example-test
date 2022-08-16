@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        problem: [A, B, C]
+        problem: [A, B, C] # NEWPROBLEM
 
     steps:
       - uses: actions/checkout@v2
@@ -127,7 +127,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        problem: [A, B, C]
+        problem: [A, B, C] # NEWPROBLEM
 
     steps:
       - name: Make flags dir
