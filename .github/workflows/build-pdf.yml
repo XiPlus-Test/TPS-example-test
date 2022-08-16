@@ -39,7 +39,7 @@ on:
 
 jobs:
   check-push:
-    if: github.event_name == 'push'
+    if: ${{ github.event_name == 'push' && github.repository != 'TNFSH-Programming-Contest/tps-starter' }}
     runs-on: ubuntu-18.04
     strategy:
       matrix:
@@ -214,7 +214,7 @@ jobs:
         if: contains(steps.target.outputs.problems, '+')
         run: |
           mkdir -p pA/attachments
-          pdfunite pA/statement/index.pdf pB/statement/index.pdf pC/statement/index.pdf `# NEWPROBLEM` pA/attachments/problems.pdf
+          pdfunite pA/statement/index.pdf `# NEWPROBLEM` pA/attachments/problems.pdf
           git add pA/attachments/problems.pdf
 
       - name: Check diff

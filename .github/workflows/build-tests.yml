@@ -22,7 +22,7 @@ on:
 
 jobs:
   check-push:
-    if: github.event_name == 'push'
+    if: ${{ github.event_name == 'push' && github.repository != 'TNFSH-Programming-Contest/tps-starter' }}
     runs-on: ubuntu-18.04
     strategy:
       matrix:
