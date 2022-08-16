@@ -23,7 +23,7 @@ on:
 jobs:
   check-push:
     if: ${{ github.event_name == 'push' && github.repository != 'TNFSH-Programming-Contest/tps-starter' }}
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         problem: [A] # NEWPROBLEM
@@ -124,7 +124,7 @@ jobs:
 
   check-manually:
     if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         problem: [A] # NEWPROBLEM
@@ -167,7 +167,7 @@ jobs:
 
   check-post:
     needs: [check-push, check-manually]
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     outputs:
       build-tests: ${{ steps.build-tests.outputs.build-tests }}
       build-input: ${{ steps.build-input.outputs.build-input }}
@@ -216,7 +216,7 @@ jobs:
   build-tests:
     needs: check-post
     if: needs.check-post.outputs.build-tests != '[]'
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         problem: ${{ fromJson(needs.check-post.outputs.build-tests) }}
