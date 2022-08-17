@@ -86,8 +86,8 @@ jobs:
           FILES: ${{ toJson(steps.changes.outputs) }}
         run: |
           echo "$FILES"
-          echo 'p${{ matrix.problem }}/gen/DISABLE_AUTO_BUILD'
-          echo ${{ hashFiles('p' + matrix.problem + '/gen/DISABLE_AUTO_BUILD') }}
+          echo ${{ format('p{0}/gen/DISABLE_AUTO_BUILD', matrix.problem) }}
+          echo ${{ hashFiles(format('p{0}/gen/DISABLE_AUTO_BUILD', matrix.problem)) }}
 
       - name: Set input flag
         if: steps.changes.outputs.input == 'true'
@@ -136,7 +136,7 @@ jobs:
           fi
 
       - name: Upload flags
-        if: hashFiles('p${{ matrix.problem }}/gen/DISABLE_AUTO_BUILD') != ''
+        if: hashFiles(format('p{0}/gen/DISABLE_AUTO_BUILD', matrix.problem)) != ''
         uses: actions/upload-artifact@v2
         with:
           name: flags
