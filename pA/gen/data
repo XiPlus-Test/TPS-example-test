@@ -2,7 +2,7 @@
 manual sample-01.in
 
 @subtask a0
-gen task2 qutxm 5
+gen task2 qutxm 6
 gen task2 iqsds
 gen task2 qsvsu
 gen task2 entmw

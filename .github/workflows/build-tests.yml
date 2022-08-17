@@ -87,7 +87,7 @@ jobs:
         run: |
           echo "$FILES"
           echo 'p${{ matrix.problem }}/gen/DISABLE_AUTO_BUILD'
-          echo ${{ hashFiles('p${{ matrix.problem }}/gen/DISABLE_AUTO_BUILD') }}
+          echo ${{ hashFiles('p' + matrix.problem + '/gen/DISABLE_AUTO_BUILD') }}
 
       - name: Set input flag
         if: steps.changes.outputs.input == 'true'
