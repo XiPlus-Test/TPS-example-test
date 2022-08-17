@@ -166,7 +166,6 @@ jobs:
 
       - name: Install xetex
         run: |
-          sudo apt-get update
           sudo apt-get install texlive-xetex
 
       - name: Install fonts
