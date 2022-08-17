@@ -51,7 +51,6 @@ jobs:
 
       - name: Make flags dir
         run: |
-          echo ${{ hashFiles('p${{ matrix.problem }}/gen/DISABLE_AUTO_BUILD') }}
           mkdir -p /home/runner/flags/build-tests/
           touch /home/runner/flags/build-tests/.keep
           mkdir -p /home/runner/flags/build-input/
@@ -86,8 +85,6 @@ jobs:
           FILES: ${{ toJson(steps.changes.outputs) }}
         run: |
           echo "$FILES"
-          echo ${{ format('p{0}/gen/DISABLE_AUTO_BUILD', matrix.problem) }}
-          echo ${{ hashFiles(format('p{0}/gen/DISABLE_AUTO_BUILD', matrix.problem)) }}
 
       - name: Set input flag
         if: steps.changes.outputs.input == 'true'
@@ -136,7 +133,7 @@ jobs:
           fi
 
       - name: Upload flags
-        if: hashFiles(format('p{0}/gen/DISABLE_AUTO_BUILD', matrix.problem)) != ''
+        if: hashFiles(format('p{0}/tests/DISABLE_AUTO_BUILD', matrix.problem)) == ''
         uses: actions/upload-artifact@v2
         with:
           name: flags
