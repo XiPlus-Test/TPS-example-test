@@ -263,7 +263,9 @@ jobs:
           git add tests/gen_summary
           git add tests/mapping
           git pull
-          git diff --cached --quiet || git commit -m "p${{ matrix.problem }} Build inputs and outputs"
+          git diff --cached --quiet || git commit -m "p${{ matrix.problem }} Build inputs and outputs
+
+          Co-Authored-By: ${{ github.event.sender.login }} <${{ github.event.sender.id }}+${{ github.event.sender.login }}@users.noreply.github.com>"
           git push
 
       - name: Build outputs
@@ -275,7 +277,9 @@ jobs:
           git status
           git add tests/*.out
           git pull
-          git diff --cached --quiet || git commit -m "p${{ matrix.problem }} Build outputs"
+          git diff --cached --quiet || git commit -m "p${{ matrix.problem }} Build outputs
+
+          Co-Authored-By: ${{ github.event.sender.login }} <${{ github.event.sender.id }}+${{ github.event.sender.login }}@users.noreply.github.com>"
           git push
 
       - name: Check tests changes
