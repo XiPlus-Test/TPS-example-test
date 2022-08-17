@@ -30,7 +30,8 @@ jobs:
      steps:
       - uses: actions/checkout@v3
 
-      - id: problem-list
+      - name: Read problems
+        id: problem-list
         run: |
           problems=$(cat .problems.json)
           echo "::set-output name=matrix::$problems"
