@@ -33,15 +33,16 @@ jobs:
           repository: 'TNFSH-Programming-Contest/tps-task-templates'
           path: 'tps-task-templates'
 
-      - name: Check envs
-        run: |
-          pwd
-          ls
-          git status
-
       - name: New problem
         run: |
           tps init p${{ inputs.label }} -T tps-task-templates
+
+      - name: Modify README.md
+        uses: jacobtomlinson/gha-find-replace@2.0.0
+        with:
+          find: "<!-- new problem -->"
+          replace: "| ${{ inputs.label }} | [statement](p${{ inputs.label }}/statement) [md](p${{ inputs.label }}/statement/index.md) [pdf](p${{ inputs.label }}/statement/index.pdf) | [gen](p${{ inputs.label }}/gen) | [validator](p${{ inputs.label }}/validator) | [solution](p${{ inputs.label }}/solution) [check](p${{ inputs.label }}/solutions-check.txt) | [tests](p${{ inputs.label }}/tests) | [problem](p${{ inputs.label }}/problem.json) [solutions](p${{ inputs.label }}/solutions.json) [subtasks](p${{ inputs.label }}/subtasks.json) |\n<!-- new problem -->"
+          include: "README.md"
 
       - name: Check envs
         run: |
@@ -54,6 +55,7 @@ jobs:
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add p${{ inputs.label }}
+          git add README.md
           git commit -m "Create problem p${{ inputs.label }}"
 
       - name: Push changes
