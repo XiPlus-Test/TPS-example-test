@@ -24,7 +24,7 @@ on:
 
 jobs:
   check-push:
-    if: ${{ github.event_name == 'push' && hashFiles('p${{ matrix.problem }}/gen/DISABLE_AUTO_BUILD') != '' && github.repository != 'TNFSH-Programming-Contest/tps-starter' }}
+    if: ${{ github.event_name == 'push' && always() && hashFiles('p${{ matrix.problem }}/gen/DISABLE_AUTO_BUILD') != '' && github.repository != 'TNFSH-Programming-Contest/tps-starter' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
