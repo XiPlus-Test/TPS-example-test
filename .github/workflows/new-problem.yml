@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       label:
-        description: 'Problem labels to create (A-Z, single uppercase character, without "p"-prefix)'
+        description: 'Problem label to create (A-Z, single uppercase character, without "p"-prefix)'
 
 jobs:
   create:
