@@ -4,5 +4,5 @@
 manual example-1.in
 
 @subtask full
-gen	20 2
+gen	20 3
 gen	30

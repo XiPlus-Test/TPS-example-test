@@ -134,6 +134,7 @@ jobs:
           fi
 
       - name: Upload flags
+        if: hashFiles('p${{ matrix.problem }}/gen/DISABLE_AUTO_BUILD') != ''
         uses: actions/upload-artifact@v2
         with:
           name: flags
