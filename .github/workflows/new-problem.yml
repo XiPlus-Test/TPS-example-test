@@ -3,8 +3,8 @@ name: New problem
 on:
   workflow_dispatch:
     inputs:
-      label:
-        description: 'Problem label to create (A-Z, single uppercase character, without "p"-prefix)'
+      count:
+        description: 'How many problems in this contest?'
 
 jobs:
   create:
@@ -29,29 +29,47 @@ jobs:
           path: 'tps-task-templates'
 
       - name: New problem
+        shell: python
         run: |
-          tps init p${{ inputs.label }} -T tps-task-templates
+          import os
+          import subprocess
 
-      - name: Modify README.md
-        uses: jacobtomlinson/gha-find-replace@2.0.0
-        with:
-          find: "<!-- new problem -->"
-          replace: "| ${{ inputs.label }} | [statement](p${{ inputs.label }}/statement) [md](p${{ inputs.label }}/statement/index.md) [pdf](p${{ inputs.label }}/statement/index.pdf) | [gen](p${{ inputs.label }}/gen) | [validator](p${{ inputs.label }}/validator) | [solution](p${{ inputs.label }}/solution) [check](p${{ inputs.label }}/solutions-check.txt) | [tests](p${{ inputs.label }}/tests) | [problem](p${{ inputs.label }}/problem.json) [solutions](p${{ inputs.label }}/solutions.json) [subtasks](p${{ inputs.label }}/subtasks.json) |\n<!-- new problem -->"
-          include: "README.md"
+          prob_cnt = '${{ inputs.count }}'
+
+          try:
+            prob_cnt = int(prob_cnt)
+          except:
+            print('Please input a number')
+            exit(1)
+
+          if prob_cnt < 1 or prob_cnt > 26:
+            print('Must be 1 ~ 26')
+            exit(1)
+
+          for i in range(prob_cnt):
+            label = chr(ord('A') + i)
+            path = 'p{}'.format(label)
+            if not os.path.exists(path):
+              subprocess.run(['tps', 'init', path, '-T', 'tps-task-templates'])
+              subprocess.run(['git', 'add', path])
+            else:
+              print('{} is exists'.format(path))
+              with open('README.md', 'r', encoding='utf8') as f:
+                text = f.read()
+              text = text.replace('<!-- new problem -->', '| {0} | [statement]({1}/statement) [md]({1}/statement/index.md) [pdf]({1}/statement/index.pdf) | [gen]({1}/gen) | [validator]({1}/validator) | [solution]({1}/solution) [check]({1}/solutions-check.txt) | [tests]({1}/tests) | [problem]({1}/problem.json) [solutions]({1}/solutions.json) [subtasks]({1}/subtasks.json) |\n<!-- new problem -->'.format(label, path))
+              with open('README.md', 'r', encoding='utf8') as f:
+                f.write(text)
 
       - name: Check envs
         run: |
-          pwd
-          ls
           git status
 
       - name: Commit files
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add p${{ inputs.label }}
           git add README.md
-          git commit -m "Create problem p${{ inputs.label }}"
+          git commit -m "Create ${{ inputs.count }} problems"
 
       - name: Push changes
         uses: ad-m/github-push-action@v0.6.0
