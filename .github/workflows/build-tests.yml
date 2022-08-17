@@ -132,8 +132,15 @@ jobs:
             echo "No changes in subtasks.json for solutions";
           fi
 
+      - name: Remove flags if auto build disabled
+        if: hashFiles(format('p{0}/tests/DISABLE_AUTO_BUILD', matrix.problem)) != ''
+        run: |
+          rm -f /home/runner/flags/build-tests/${{ matrix.problem }}
+          rm -f /home/runner/flags/build-input/${{ matrix.problem }}
+          rm -f /home/runner/flags/build-output/${{ matrix.problem }}
+          rm -f /home/runner/flags/run-solutions/${{ matrix.problem }}
+
       - name: Upload flags
-        if: hashFiles(format('p{0}/tests/DISABLE_AUTO_BUILD', matrix.problem)) == ''
         uses: actions/upload-artifact@v2
         with:
           name: flags

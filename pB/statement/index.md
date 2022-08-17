@@ -1,4 +1,4 @@
-# 1
+#
 
 <!-- \begin{figure}[h]
 \centering
