@@ -46,6 +46,8 @@ jobs:
             print('Must be 1 ~ 26')
             exit(1)
 
+          with open('README.md', 'r', encoding='utf8') as f:
+            readme = f.read()
           for i in range(prob_cnt):
             label = chr(ord('A') + i)
             path = 'p{}'.format(label)
@@ -54,11 +56,9 @@ jobs:
               subprocess.run(['git', 'add', path])
             else:
               print('{} is exists'.format(path))
-              with open('README.md', 'r', encoding='utf8') as f:
-                text = f.read()
-              text = text.replace('<!-- new problem -->', '| {0} | [statement]({1}/statement) [md]({1}/statement/index.md) [pdf]({1}/statement/index.pdf) | [gen]({1}/gen) | [validator]({1}/validator) | [solution]({1}/solution) [check]({1}/solutions-check.txt) | [tests]({1}/tests) | [problem]({1}/problem.json) [solutions]({1}/solutions.json) [subtasks]({1}/subtasks.json) |\n<!-- new problem -->'.format(label, path))
-              with open('README.md', 'r', encoding='utf8') as f:
-                f.write(text)
+              readme = readme.replace('<!-- new problem -->', '| {0} | [statement]({1}/statement) [md]({1}/statement/index.md) [pdf]({1}/statement/index.pdf) | [gen]({1}/gen) | [validator]({1}/validator) | [solution]({1}/solution) [check]({1}/solutions-check.txt) | [tests]({1}/tests) | [problem]({1}/problem.json) [solutions]({1}/solutions.json) [subtasks]({1}/subtasks.json) |\n<!-- new problem -->'.format(label, path))
+          with open('README.md', 'w', encoding='utf8') as f:
+            f.write(readme)
 
       - name: Check envs
         run: |
