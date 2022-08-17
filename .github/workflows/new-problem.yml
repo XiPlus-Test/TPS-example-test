@@ -46,29 +46,31 @@ jobs:
             print('Must be 1 ~ 26')
             exit(1)
 
+          with open('Makefile', 'r', encoding='utf8') as f:
+            makefile = f.read()
           with open('README.md', 'r', encoding='utf8') as f:
             readme = f.read()
           for i in range(prob_cnt):
             label = chr(ord('A') + i)
             path = 'p{}'.format(label)
             if not os.path.exists(path):
-              subprocess.run(['tps', 'init', path, '-T', 'tps-task-templates'])
+              subprocess.run(['tps', 'init', path, '-T', 'tps-task-templates', '-t', 'default'])
               subprocess.run(['git', 'add', path])
+              makefile = makefile.replace('# NEWPROBELM', 'import-{0}:\n\tcmsImportTask ./{0}/ -u $(if $(s), , --no-statement)\n\n# NEWPROBELM'.format(path))
+              readme = readme.replace('<!-- new problem -->', '| {0} | [statement]({1}/statement) [md]({1}/statement/index.md) [pdf]({1}/statement/index.pdf) | [gen]({1}/gen) | [validator]({1}/validator) | [solution]({1}/solution) [check]({1}/solutions-check.txt) | [tests]({1}/tests) | [problem]({1}/problem.json) [solutions]({1}/solutions.json) [subtasks]({1}/subtasks.json) |\n<!-- new problem -->'.format(label, path))
             else:
               print('{} is exists'.format(path))
-              readme = readme.replace('<!-- new problem -->', '| {0} | [statement]({1}/statement) [md]({1}/statement/index.md) [pdf]({1}/statement/index.pdf) | [gen]({1}/gen) | [validator]({1}/validator) | [solution]({1}/solution) [check]({1}/solutions-check.txt) | [tests]({1}/tests) | [problem]({1}/problem.json) [solutions]({1}/solutions.json) [subtasks]({1}/subtasks.json) |\n<!-- new problem -->'.format(label, path))
+          with open('Makefile', 'w', encoding='utf8') as f:
+            f.write(makefile)
           with open('README.md', 'w', encoding='utf8') as f:
             f.write(readme)
 
-      - name: Check envs
-        run: |
-          git status
-
       - name: Commit files
         run: |
+          git add Makefile
+          git add README.md
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add README.md
           git commit -m "Create ${{ inputs.count }} problems"
 
       - name: Push changes
