@@ -23,12 +23,25 @@ on:
         default: ''
 
 jobs:
+  problem-list:
+     runs-on: ubuntu-latest
+     outputs:
+        matrix: ${{ steps.problem-list.outputs.matrix }}
+     steps:
+      - uses: actions/checkout@v3
+
+      - id: problem-list
+        run: |
+          problems=$(cat .problems.json)
+          echo "::set-output name=matrix::$problems"
+
   check-push:
+    needs: [problem-list]
     if: ${{ github.event_name == 'push' && github.repository != 'TNFSH-Programming-Contest/tps-starter' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        problem: [A, B, C] # NEWPROBLEM
+        problem: ${{ fromJson(needs.problem-list.outputs.matrix) }}
 
     steps:
       - uses: actions/checkout@v3
@@ -126,11 +139,12 @@ jobs:
           path: /home/runner/flags/
 
   check-manually:
+    needs: [problem-list]
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        problem: [A] # NEWPROBLEM
+        problem: ${{ fromJson(needs.problem-list.outputs.matrix) }}
 
     steps:
       - name: Make flags dir
