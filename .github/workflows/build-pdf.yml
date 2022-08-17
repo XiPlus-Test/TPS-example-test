@@ -104,6 +104,7 @@ jobs:
 
   build-pdf:
     needs: [check-push, check-manually]
+    if: always()
     runs-on: ubuntu-latest
 
     steps:

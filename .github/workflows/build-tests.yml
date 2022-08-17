@@ -169,6 +169,7 @@ jobs:
 
   check-post:
     needs: [check-push, check-manually]
+    if: always()
     runs-on: ubuntu-latest
     outputs:
       build-tests: ${{ steps.build-tests.outputs.build-tests }}
@@ -217,7 +218,7 @@ jobs:
 
   build-tests:
     needs: check-post
-    if: needs.check-post.outputs.build-tests != '[]'
+    if: always() && needs.check-post.outputs.build-tests != '[]'
     runs-on: ubuntu-latest
     strategy:
       matrix:
