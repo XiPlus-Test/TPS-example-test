@@ -31,6 +31,7 @@ jobs:
       - name: New problem
         shell: python
         run: |
+          import json
           import os
           import subprocess
 
@@ -46,6 +47,8 @@ jobs:
             print('Must be 1 ~ 26')
             exit(1)
 
+          with open('.problems.json', 'r', encoding='utf8') as f:
+            problems = f.read()
           with open('Makefile', 'r', encoding='utf8') as f:
             makefile = f.read()
           with open('README.md', 'r', encoding='utf8') as f:
@@ -56,10 +59,14 @@ jobs:
             if not os.path.exists(path):
               subprocess.run(['tps', 'init', path, '-T', 'tps-task-templates', '-t', 'default'])
               subprocess.run(['git', 'add', path])
+
+              problems.append(label)
               makefile = makefile.replace('# NEWPROBELM', 'import-{0}:\n\tcmsImportTask ./{0}/ -u $(if $(s), , --no-statement)\n\n# NEWPROBELM'.format(path))
               readme = readme.replace('<!-- new problem -->', '| {0} | [statement]({1}/statement) [md]({1}/statement/index.md) [pdf]({1}/statement/index.pdf) | [gen]({1}/gen) | [validator]({1}/validator) | [solution]({1}/solution) [check]({1}/solutions-check.txt) | [tests]({1}/tests) | [problem]({1}/problem.json) [solutions]({1}/solutions.json) [subtasks]({1}/subtasks.json) |\n<!-- new problem -->'.format(label, path))
             else:
               print('{} is exists'.format(path))
+          with open('.problems.json', 'w', encoding='utf8') as f:
+            json.dump(problems, f)
           with open('Makefile', 'w', encoding='utf8') as f:
             f.write(makefile)
           with open('README.md', 'w', encoding='utf8') as f:
@@ -67,6 +74,7 @@ jobs:
 
       - name: Commit files
         run: |
+          git add .problems.json
           git add Makefile
           git add README.md
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
