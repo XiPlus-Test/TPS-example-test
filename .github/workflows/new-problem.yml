@@ -48,7 +48,7 @@ jobs:
             exit(1)
 
           with open('.problems.json', 'r', encoding='utf8') as f:
-            problems = f.read()
+            problems = json.load(f)
           with open('Makefile', 'r', encoding='utf8') as f:
             makefile = f.read()
           with open('README.md', 'r', encoding='utf8') as f:
