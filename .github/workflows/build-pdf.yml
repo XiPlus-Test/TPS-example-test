@@ -124,7 +124,7 @@ jobs:
 
   check-post:
     needs: [check-push, check-manually]
-    if: always()
+    if: ${{ always() && github.repository != 'TNFSH-Programming-Contest/tps-starter' }}
     runs-on: ubuntu-latest
     outputs:
       problems: ${{ steps.check-post.outputs.problems }}

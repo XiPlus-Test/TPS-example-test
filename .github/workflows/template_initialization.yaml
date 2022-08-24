@@ -72,10 +72,3 @@ jobs:
         env:
           MATRIX_CONTEXT: ${{ toJSON(matrix) }}
         run: echo "$MATRIX_CONTEXT"
-
-      - name: Other checks
-        run: |
-          for prob in A B C; do
-            echo ${{ 'p${prob}/statement/DISABLE_AUTO_BUILD' }}
-            echo ${{ hashFiles('p${prob}/statement/DISABLE_AUTO_BUILD') }}
-          done
