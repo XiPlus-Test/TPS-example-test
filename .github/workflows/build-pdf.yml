@@ -136,6 +136,11 @@ jobs:
           name: flags
           path: /home/runner/flags/
 
+      - name: Set merge flag
+        if: ${{ github.event_name == 'workflow_dispatch' && contains(github.event.inputs.target, '+') }}
+        run: |
+          echo "+" > /home/runner/flags/+
+
       - name: Check target
         id: check-post
         working-directory: /home/runner/flags/
