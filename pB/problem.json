@@ -6,7 +6,7 @@
 	"memory_limit": 512,
 	"time_limit": 1.0,
 	"type": "Batch",
-	"description": "",
+	"description": "asd",
 	"tps_web_url": "",
 	"has_grader": false,
 	"feedback_level": "full",

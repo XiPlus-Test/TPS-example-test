@@ -13,12 +13,26 @@ on:
         default: ''
 
 jobs:
+  problem-list:
+     runs-on: ubuntu-latest
+     outputs:
+        matrix: ${{ steps.problem-list.outputs.matrix }}
+     steps:
+      - uses: actions/checkout@v3
+
+      - name: Read problems
+        id: problem-list
+        run: |
+          problems=$(cat .problems.json)
+          echo "::set-output name=matrix::$problems"
+
   verify:
+    needs: [problem-list]
     if: ${{ github.event_name == 'push' && github.repository != 'TNFSH-Programming-Contest/tps-starter' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        problem: [A] # NEWPROBLEM
+        problem: ${{ fromJson(needs.problem-list.outputs.matrix) }}
       fail-fast: false
 
     steps:
