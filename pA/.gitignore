@@ -2,7 +2,7 @@
 /logs/
 /public/tests
 
-#Ignoring the extension-less executable binary in public/cpp
+#Ignoring the extension-less executable binary in public/cpp a
 /public/cpp/*
 !/public/cpp/*.*
 
