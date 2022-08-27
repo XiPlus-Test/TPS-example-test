@@ -1,4 +1,0 @@
-# test_name gen_line_number gen_line_content
-0-01	  4	manual example-1.in
-1-01	  7	gen	20 1
-1-02	  8	gen	30
