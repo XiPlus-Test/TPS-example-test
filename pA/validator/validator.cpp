@@ -13,7 +13,7 @@ int main() {
 	int B = inf.readInt(-1000000000, 1000000000);
 	inf.readEoln();
 
-	inf.readEof();
+	// inf.readEof();
 
 	return 0;
 }
