@@ -1,5 +1,6 @@
 @subtask samples
 manual sample-01.in
+manual sample-02.in
 
 @subtask a0
 gen task2 qutxm 8
