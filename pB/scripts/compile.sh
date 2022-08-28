@@ -6,28 +6,20 @@ source "${INTERNALS}/util.sh"
 
 
 function usage {
-	errcho -ne "\
-Usage:
-  tps compile [options] <solution-path>
+	errcho "Usage: <compile> [options] <solution-path>"
+	errcho "Options:"
 
-Description:
-  Compiles a solution in the sandbox.
+	errcho -e "  -h, --help"
+	errcho -e "\tShows this help."
 
-Options:
-\
-  -h, --help
-\tShows this help.
-\
-  -v, --verbose
-\tPrints verbose details on values, decisions, and commands being executed.
-\
-  -w, --warning-sensitive
-\tFails when there are warnings.
-\
-  -p, --public
-\tUses the public graders for compiling the solution.
-\tThis option is available only if the task has grader.
-"
+	errcho -e "  -v, --verbose"
+	errcho -e "\tPrints verbose details on values, decisions, and commands being executed."
+
+	errcho -e "  -w, --warning-sensitive"
+	errcho -e "\tFails when there are warnings."
+
+	errcho -e "  -p, --public"
+	errcho -e "\tUses the public graders for compiling the solution."
 }
 
 if "${HAS_GRADER}"; then
@@ -41,7 +33,8 @@ function handle_option {
 	local -r curr_arg="$1"; shift
 	case "${curr_arg}" in
 		-h|--help)
-			usage_exit 0
+			usage
+			exit 0
 			;;
 		-v|--verbose)
 			VERBOSE=true
@@ -53,7 +46,8 @@ function handle_option {
 			if "${HAS_GRADER}"; then
 				GRADER_TYPE="public"
 			else
-				error_usage_exit 2 "Invalid option '${curr_arg}': There is no grader in this task."
+				errcho "Invalid option: There is no grader in this task."
+				exit 2
 			fi
 			;;
 		*)
@@ -73,8 +67,11 @@ function handle_positional_arg {
 
 argument_parser "handle_positional_arg" "handle_option" "invalid_arg_with_usage" "$@"
 
-variable_exists "SOLUTION" ||
-	error_usage_exit 2 "Solution is not specified."
+if variable_not_exists "SOLUTION" ; then
+	errcho "Solution is not specified."
+	usage
+	exit 2
+fi
 
 WARN_FILE="${SANDBOX}/compile.warn"
 

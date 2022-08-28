@@ -1,35 +1,13 @@
-# 1
+# 四則運算2
 
-<!-- \begin{figure}[h]
-\centering
-\includegraphics[width=2in]{TODO.jpg}
-\caption{TODO: 圖片說明}
-\end{figure} -->
+## 範例輸入 1
+\testfile{0-01.in}
 
-TODO: 題目敘述
+## 範例輸出 1
+\testfile{0-01.out}
 
-\clearpage
+## 範例輸入 2
+\testfile{0-02.in}
 
-## 輸入
-TODO: 輸入說明
-
-## 輸出
-TODO: 輸出說明
-
-## 輸入限制
- - TODO: 輸入限制
-
-## 子任務
-\subtasks
-
-\clearpage
-
-## 範例輸入
-```
-TODO: 範例輸入
-```
-
-## 範例輸出
-```
-TODO: 範例輸出
-```
+## 範例輸出 2
+\testfile{0-02.out}

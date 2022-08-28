@@ -64,11 +64,3 @@ def log_warning(message):
 
     with open(warnfile, 'a') as f:
         f.write("%s\n" % message)
-
-
-def unify_list(l):
-    seen = []
-    for e in l:
-        if e not in seen:
-            seen.append(e)
-    return seen
