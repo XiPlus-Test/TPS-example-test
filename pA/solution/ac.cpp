@@ -44,6 +44,8 @@ int main() {
 		cout << "ERROR" << endl;
 	}
 
+	cout << "abcdefghijklmnopqrstuvwxyz" << endl;
+	cout << "ABCDEFGHIJKLMNOPQRSTUVWXYZ" << endl;
+
 	return 0;
 }
-
