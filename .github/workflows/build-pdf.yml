@@ -21,7 +21,8 @@ on:
 
 jobs:
   problem-list:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    timeout-minutes: 3
     outputs:
       matrix: ${{ steps.problem-list.outputs.matrix }}
     steps:
@@ -36,7 +37,8 @@ jobs:
   check-push:
     needs: [problem-list]
     if: ${{ github.event_name == 'push' && github.repository != 'TNFSH-Programming-Contest/tps-starter' }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    timeout-minutes: 3
     strategy:
       matrix:
         problem: ${{ fromJson(needs.problem-list.outputs.matrix) }}
@@ -102,7 +104,8 @@ jobs:
   check-manually:
     needs: [problem-list]
     if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    timeout-minutes: 3
     strategy:
       matrix:
         problem: ${{ fromJson(needs.problem-list.outputs.matrix) }}
@@ -127,7 +130,8 @@ jobs:
   check-post:
     needs: [check-push, check-manually]
     if: ${{ always() && github.repository != 'TNFSH-Programming-Contest/tps-starter' }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    timeout-minutes: 3
     outputs:
       problems: ${{ steps.check-post.outputs.problems }}
 
@@ -154,7 +158,8 @@ jobs:
   build-pdf:
     needs: check-post
     if: always() && needs.check-post.outputs.problems != ''
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    timeout-minutes: 5
 
     steps:
       - uses: actions/checkout@v3

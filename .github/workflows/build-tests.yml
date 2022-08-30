@@ -24,7 +24,8 @@ on:
 
 jobs:
   problem-list:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    timeout-minutes: 3
     outputs:
       matrix: ${{ steps.problem-list.outputs.matrix }}
     steps:
@@ -39,7 +40,8 @@ jobs:
   check-push:
     needs: [problem-list]
     if: ${{ github.event_name == 'push' && github.repository != 'TNFSH-Programming-Contest/tps-starter' }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    timeout-minutes: 3
     strategy:
       matrix:
         problem: ${{ fromJson(needs.problem-list.outputs.matrix) }}
@@ -74,7 +76,6 @@ jobs:
           filters: |
             input:
               - p${{ matrix.problem }}/gen/**
-              - p${{ matrix.problem }}/solution/DISABLE_AUTO_BUILD
             output:
               - p${{ matrix.problem }}/solution/${{ steps.env.outputs.model_solution }}
             solutions:
@@ -134,7 +135,7 @@ jobs:
           fi
 
       - name: Remove flags if auto build disabled
-        if: hashFiles(format('p{0}/solution/DISABLE_AUTO_BUILD', matrix.problem)) != ''
+        if: hashFiles(format('p{0}/gen/DISABLE_AUTO_BUILD', matrix.problem)) != ''
         run: |
           rm -f /home/runner/flags/build-tests/${{ matrix.problem }}
           rm -f /home/runner/flags/build-input/${{ matrix.problem }}
@@ -150,7 +151,8 @@ jobs:
   check-manually:
     needs: [problem-list]
     if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    timeout-minutes: 3
     strategy:
       matrix:
         problem: ${{ fromJson(needs.problem-list.outputs.matrix) }}
@@ -194,7 +196,8 @@ jobs:
   check-post:
     needs: [check-push, check-manually]
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    timeout-minutes: 3
     outputs:
       build-tests: ${{ steps.build-tests.outputs.build-tests }}
       build-input: ${{ steps.build-input.outputs.build-input }}
@@ -243,7 +246,8 @@ jobs:
   build-tests:
     needs: check-post
     if: always() && needs.check-post.outputs.build-tests != '[]'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    timeout-minutes: 15
     strategy:
       matrix:
         problem: ${{ fromJson(needs.check-post.outputs.build-tests) }}
