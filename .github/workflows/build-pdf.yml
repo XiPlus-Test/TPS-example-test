@@ -113,7 +113,6 @@ jobs:
     steps:
       - name: Make flags dir
         run: |
-          echo $RUNNER_TEMP/flags/
           mkdir -p $RUNNER_TEMP/flags/
           touch $RUNNER_TEMP/flags/.keep
 
