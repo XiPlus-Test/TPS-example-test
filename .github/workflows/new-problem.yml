@@ -30,7 +30,7 @@ jobs:
           path: 'tps-task-templates'
 
       - name: New problem
-        shell: python3
+        shell: python3 {0}
         run: |
           import json
           import os
