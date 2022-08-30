@@ -150,7 +150,7 @@ jobs:
 
       - name: Check target
         id: check-post
-        working-directory: $RUNNER_TEMP/flags/
+        working-directory: ${{ runner.temp }}/flags/
         run: |
           probs=$(ls -m .)
           echo $probs

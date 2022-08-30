@@ -146,7 +146,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: flags
-          path: $RUNNER_TEMP/flags/
+          path: ${{ runner.temp }}/flags/
 
   check-manually:
     needs: [problem-list]
@@ -191,7 +191,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: flags
-          path: $RUNNER_TEMP/flags/
+          path: ${{ runner.temp }}/flags/
 
   check-post:
     needs: [check-push, check-manually]
@@ -209,11 +209,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: flags
-          path: $RUNNER_TEMP/flags/
+          path: ${{ runner.temp }}/flags/
 
       - name: build-tests
         id: build-tests
-        working-directory: $RUNNER_TEMP/flags/build-tests/
+        working-directory: ${{ runner.temp }}/flags/build-tests/
         run: |
           probs=$(python3 -c 'import json, glob; print(json.dumps(glob.glob("*")))')
           echo $probs
@@ -221,7 +221,7 @@ jobs:
 
       - name: build-input
         id: build-input
-        working-directory: $RUNNER_TEMP/flags/build-input/
+        working-directory: ${{ runner.temp }}/flags/build-input/
         run: |
           probs=$(python3 -c 'import glob; print("".join(glob.glob("*")))')
           echo $probs
@@ -229,7 +229,7 @@ jobs:
 
       - name: build-output
         id: build-output
-        working-directory: $RUNNER_TEMP/flags/build-output/
+        working-directory: ${{ runner.temp }}/flags/build-output/
         run: |
           probs=$(python3 -c 'import glob; print("".join(glob.glob("*")))')
           echo $probs
@@ -237,7 +237,7 @@ jobs:
 
       - name: run-solutions
         id: run-solutions
-        working-directory: $RUNNER_TEMP/flags/run-solutions/
+        working-directory: ${{ runner.temp }}/flags/run-solutions/
         run: |
           probs=$(python3 -c 'import glob; print("".join(glob.glob("*")))')
           echo $probs
