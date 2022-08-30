@@ -10,7 +10,7 @@ on:
 jobs:
   template_initialization:
     runs-on: self-hosted
-    if: ${{ github.event.created && github.repository != 'Xi-Plus/TPS-example-test' }}
+    if: ${{ github.event.created && github.repository != 'XiPlus-Test/TPS-example-test' }}
     steps:
 
       - uses: actions/checkout@v3
@@ -44,7 +44,7 @@ jobs:
 
   debug:
     runs-on: self-hosted
-    if: ${{ github.repository == 'Xi-Plus/TPS-example-test' }}
+    if: ${{ github.repository == 'XiPlus-Test/TPS-example-test' }}
     steps:
       - name: Show envs
         run: env
