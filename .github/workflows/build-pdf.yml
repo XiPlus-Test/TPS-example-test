@@ -99,7 +99,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: flags
-          path: ${RUNNER_TEMP}/flags/
+          path: ${{ runner.temp }}/flags/
 
   check-manually:
     needs: [problem-list]
@@ -126,7 +126,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: flags
-          path: ${RUNNER_TEMP}/flags/
+          path: ${{ runner.temp }}/flags/
 
   check-post:
     needs: [check-push, check-manually]
@@ -141,7 +141,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: flags
-          path: ${RUNNER_TEMP}/flags/
+          path: ${{ runner.temp }}/flags/
 
       - name: Set merge flag
         if: ${{ github.event_name == 'workflow_dispatch' && contains(github.event.inputs.target, '+') }}
@@ -169,7 +169,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: flags
-          path: ${RUNNER_TEMP}/flags/
+          path: ${{ runner.temp }}/flags/
 
       - name: Install tps
         run: |
