@@ -113,7 +113,7 @@ jobs:
     steps:
       - name: Make flags dir
         run: |
-          echo $HOME
+          echo $GITHUB_WORKSPACE
           mkdir -p /home/runner/flags/
           touch /home/runner/flags/.keep
 
