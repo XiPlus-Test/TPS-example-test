@@ -9,7 +9,7 @@ on:
 
 jobs:
   template_initialization:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: ${{ github.event.created && github.repository != 'Xi-Plus/TPS-example-test' }}
     steps:
 
@@ -43,7 +43,7 @@ jobs:
           branch: main
 
   debug:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: ${{ github.repository == 'Xi-Plus/TPS-example-test' }}
     steps:
       - name: Show envs
