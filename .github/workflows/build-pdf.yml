@@ -20,12 +20,13 @@ on:
         default: ''
       merge:
         description: 'Merge pdfs?'
+        default: false
         type: boolean
 
 jobs:
   run:
     uses: TNFSH-Programming-Contest/tps-actions/.github/workflows/build-pdf.yml@main
     with:
-      problems: ${{ github.event.inputs.problems }}
-      merge: ${{ fromJson(github.event.inputs.merge) }}
+      problems: ${{ inputs.problems }}
+      merge: ${{ inputs.merge && fromJson(inputs.merge) || false }}
       runs-on: self-hosted
