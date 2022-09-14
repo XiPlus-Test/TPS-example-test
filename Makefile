@@ -14,4 +14,5 @@ import-pC:
 merge-pdfs: pA/attachments/problems.pdf
 
 pA/attachments/problems.pdf: p*/statement/index.pdf
+	chmod a+x merge_pdfs.sh
 	./merge_pdfs.sh
