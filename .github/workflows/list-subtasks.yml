@@ -10,4 +10,4 @@ on:
 
 jobs:
   run:
-    uses: TNFSH-Programming-Contest/tps-actions/.github/workflows/list-subtasks.yml@main
+    uses: XiPlus-Test/tps-actions-test/.github/workflows/list-subtasks.yml@main
