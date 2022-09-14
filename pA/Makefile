@@ -2,5 +2,5 @@
 
 statement: statement/index.pdf
 
-statement/index.pdf: statement/index.md statement/*.jpg problem.json subtasks.json
+statement/index.pdf: statement/index.md $(wildcard statement/*.jpg statement/*.png) problem.json subtasks.json
 	tps statement
